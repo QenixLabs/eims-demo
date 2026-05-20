@@ -155,6 +155,7 @@ export default function Sidebar() {
 
       {/* Sidebar */}
       <aside
+        data-tour="sidebar-nav"
         className={cn(
           "fixed left-0 top-0 h-screen w-[260px] bg-slate-900 z-40 flex flex-col transition-transform duration-300 ease-out shadow-2xl",
           mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
@@ -184,6 +185,7 @@ export default function Sidebar() {
               <Link
                 key={item.id}
                 to={item.route}
+                data-tour={`nav-${item.id}`}
                 onClick={() => setMobileOpen(false)}
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 relative group",

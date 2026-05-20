@@ -1,7 +1,7 @@
-import { Search, Bell, Plus, User } from "lucide-react";
+import { Search, Bell, Plus, HelpCircle } from "lucide-react";
 import { useLocation } from "react-router";
 import { useAuthStore } from "@/store/authStore";
-import { useState } from "react";
+import { useTour } from "@/components/tour/TourProvider";
 
 const routeTitles: Record<string, { title: string; subtitle: string }> = {
   "/": { title: "Dashboard", subtitle: "Overview of your identity management system" },
@@ -20,6 +20,7 @@ export default function Header() {
   const platformUser = useAuthStore((s) => s.platformUser);
   const isOperator = useAuthStore((s) => s.isOperator());
   const isAdmin = useAuthStore((s) => s.isSuperAdmin() || s.isAuthorityAdmin());
+  const { startTour, hasTourForPage } = useTour();
 
   const getPageInfo = () => {
     const path = location.pathname;
@@ -70,6 +71,15 @@ export default function Header() {
             <Plus size={16} />
             <span>Quick Enroll</span>
           </a>
+        )}
+        {hasTourForPage("dashboard") && (
+          <button
+            onClick={() => startTour()}
+            className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
+            title="Start Tour"
+          >
+            <HelpCircle size={18} />
+          </button>
         )}
         <button className="relative p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all">
           <Bell size={18} />

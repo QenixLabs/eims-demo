@@ -30,7 +30,7 @@ export default function Verification() {
   return (
     <div className="space-y-5 animate-in fade-in duration-300">
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div data-tour="verif-stats" className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <StatCard
           icon={Clock}
           value={pendingCount}
@@ -65,7 +65,7 @@ export default function Verification() {
       </div>
 
       {/* Applications List */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+      <div data-tour="verif-table" className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

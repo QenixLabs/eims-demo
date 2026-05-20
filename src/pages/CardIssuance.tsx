@@ -77,7 +77,7 @@ export default function CardIssuance() {
       </div>
 
       {/* Approved Applications */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
+      <div data-tour="issuance-table" className="bg-white rounded-xl border border-slate-200 shadow-sm">
         <div className="p-5 border-b border-slate-100">
           <h3 className="font-semibold text-slate-900 flex items-center gap-2">
             <IdCard size={18} className="text-blue-600" />

@@ -9,10 +9,13 @@ import {
   ShieldCheck,
   Monitor,
   Lock,
+  HelpCircle,
 } from "lucide-react";
+import { useTour } from "@/components/tour/TourProvider";
 
 export default function Settings() {
   const platformUser = useAuthStore((s) => s.platformUser);
+  const { startTour } = useTour();
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -180,6 +183,21 @@ export default function Settings() {
               </p>
             </div>
             <Switch defaultChecked />
+          </div>
+          <Separator />
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-slate-900">
+                Guided Tour
+              </p>
+              <p className="text-xs text-slate-500">
+                Restart the interactive platform tour
+              </p>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => startTour()}>
+              <HelpCircle size={14} className="mr-1" />
+              Restart Tour
+            </Button>
           </div>
         </CardContent>
       </Card>

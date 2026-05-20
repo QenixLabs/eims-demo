@@ -298,7 +298,7 @@ export default function AuditDashboard() {
       )}
 
       {/* Audit Log Table */}
-      <Card className="border-slate-200 shadow-sm">
+      <Card data-tour="audit-table" className="border-slate-200 shadow-sm">
         <CardHeader className="pb-4">
           <CardTitle className="text-base flex items-center gap-2">
             <Shield size={18} className="text-blue-600" />

@@ -116,7 +116,7 @@ export default function NewApplication() {
       </Button>
 
       {/* Step indicator */}
-      <div className="mb-8">
+      <div data-tour="step-indicator" className="mb-8">
         <div className="flex items-center justify-between max-w-lg mx-auto">
           {steps.map((s, idx) => (
             <div key={s.number} className="flex items-center flex-1">
@@ -161,7 +161,7 @@ export default function NewApplication() {
       {step === 1 && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Form */}
-          <div className="lg:col-span-2 space-y-5">
+          <div data-tour="personal-info" className="lg:col-span-2 space-y-5">
             <Card className="border-slate-200 shadow-sm">
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-2">
@@ -254,7 +254,7 @@ export default function NewApplication() {
           </div>
 
           {/* Photo Upload Preview */}
-          <div>
+          <div data-tour="photo-upload">
             <Card className="border-slate-200 shadow-sm">
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-2">
@@ -363,7 +363,7 @@ export default function NewApplication() {
       )}
 
       {/* Actions */}
-      <div className="flex justify-between items-center mt-8 pt-6 border-t border-slate-200">
+      <div data-tour="form-actions" className="flex justify-between items-center mt-8 pt-6 border-t border-slate-200">
         <div>
           {step > 1 && (
             <Button variant="outline" onClick={() => setStep(step - 1)}>

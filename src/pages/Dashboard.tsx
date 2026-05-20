@@ -92,7 +92,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Welcome Banner */}
-      <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 p-6 text-white">
+      <div data-tour="welcome-banner" className="relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 p-6 text-white">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-white/20 blur-3xl" />
           <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
@@ -122,7 +122,7 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div data-tour="stats-cards" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Total Authorities"
           value={superAdminStats?.totalAuthorities || 0}
@@ -289,7 +289,7 @@ export default function Dashboard() {
       </div>
 
       {/* Recent Applications */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
+      <div data-tour="recent-apps" className="bg-white rounded-xl border border-slate-200 shadow-sm">
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <div>
             <h3 className="text-base font-semibold text-slate-900">Recent Applications</h3>

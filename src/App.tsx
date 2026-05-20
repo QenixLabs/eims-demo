@@ -18,6 +18,7 @@ import BiometricCapture from "@/pages/BiometricCapture";
 import Payment from "@/pages/Payment";
 import AuditDashboard from "@/pages/AuditDashboard";
 import NotFound from "@/pages/NotFound";
+import { TourProvider } from "@/components/tour/TourProvider";
 import { useEffect } from "react";
 import { useNavigate, useLocation } from "react-router";
 
@@ -74,8 +75,9 @@ export default function App() {
         path="/*"
         element={
           <AuthGuard>
-            <AppLayout>
-              <Routes>
+            <TourProvider>
+              <AppLayout>
+                <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/applications" element={<Applications />} />
                 <Route path="/applications/new" element={<NewApplication />} />
@@ -160,6 +162,7 @@ export default function App() {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </AppLayout>
+          </TourProvider>
           </AuthGuard>
         }
       />

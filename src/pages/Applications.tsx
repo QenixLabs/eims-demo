@@ -84,7 +84,7 @@ export default function Applications() {
   return (
     <div className="space-y-5 animate-in fade-in duration-300">
       {/* Filters */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-col sm:flex-row gap-3 shadow-sm">
+      <div data-tour="app-filters" className="bg-white rounded-xl border border-slate-200 p-4 flex flex-col sm:flex-row gap-3 shadow-sm">
         <div className="relative flex-1">
           <Search
             size={16}
@@ -114,7 +114,7 @@ export default function Applications() {
         </div>
         {canCreate && (
           <Link to="/applications/new">
-            <Button className="h-10 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-lg shadow-blue-500/20">
+            <Button data-tour="new-app-btn" className="h-10 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-lg shadow-blue-500/20">
               <Plus size={16} className="mr-1" />
               New Application
             </Button>
@@ -123,7 +123,7 @@ export default function Applications() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+      <div data-tour="app-table" className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

@@ -255,7 +255,7 @@ export default function UsersPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-lg border border-slate-200">
+      <div data-tour="users-table" className="bg-white rounded-lg border border-slate-200">
         <Table>
           <TableHeader>
             <TableRow className="bg-slate-50">

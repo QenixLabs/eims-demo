@@ -148,7 +148,7 @@ export default function Authorities() {
           }}
         >
           <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-lg shadow-blue-500/20">
+            <Button data-tour="create-auth" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-lg shadow-blue-500/20">
               <Plus size={16} className="mr-1" />
               Add Authority
             </Button>
@@ -239,7 +239,7 @@ export default function Authorities() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+      <div data-tour="auth-table" className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

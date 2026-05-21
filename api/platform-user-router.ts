@@ -1,9 +1,14 @@
 import { z } from "zod";
+import * as cookie from "cookie";
 import { createRouter, publicQuery } from "./middleware";
 import { getDb } from "./queries/connection";
 import { platformUsers } from "@db/schema";
 import { eq, like, or, and, count } from "drizzle-orm";
 import { hash, compare } from "bcryptjs";
+import { getSessionCookieOptions } from "./lib/cookies";
+import { signSessionToken } from "./kimi/session";
+import { env } from "./lib/env";
+import { Session } from "@contracts/constants";
 
 export const platformUserRouter = createRouter({
   list: publicQuery
@@ -155,7 +160,7 @@ export const platformUserRouter = createRouter({
         password: z.string(),
       })
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const db = getDb();
       const result = await db
         .select()
@@ -176,6 +181,27 @@ export const platformUserRouter = createRouter({
       if (!validPassword) {
         return { success: false, error: "Invalid credentials" };
       }
+
+      const token = await signSessionToken({
+        userId: String(user.id),
+        clientId: env.appId,
+      });
+
+      const cookieOpts = getSessionCookieOptions(ctx.req.headers);
+      ctx.resHeaders.append(
+        "set-cookie",
+        cookie.serialize(Session.cookieName, token, {
+          httpOnly: cookieOpts.httpOnly,
+          path: cookieOpts.path,
+          sameSite: cookieOpts.sameSite?.toLowerCase() as
+            | "lax"
+            | "none"
+            | "strict"
+            | undefined,
+          secure: cookieOpts.secure,
+          maxAge: Session.maxAgeMs / 1000,
+        }),
+      );
 
       const { password, ...userWithoutPassword } = user;
       return { success: true, user: userWithoutPassword };

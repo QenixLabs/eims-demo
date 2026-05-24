@@ -16,7 +16,7 @@ import {
   CreditCard,
   ShieldCheck,
   Clock,
-  Fingerprint,
+  Pencil,
   DollarSign,
   CheckCircle2,
   AlertCircle,
@@ -92,19 +92,19 @@ export default function ApplicationDetail() {
 
       {/* Action Buttons */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <Link to={`/applications/${id}/biometrics`} className="block">
+        <Link to={`/applications/${id}/edit`} className="block">
           <Button variant="outline" className="w-full h-12 border-blue-200 hover:bg-blue-50">
-            <Fingerprint size={18} className="mr-2 text-blue-600" />
+            <Pencil size={18} className="mr-2 text-blue-600" />
             <div className="text-left">
-              <p className="text-sm font-medium">Biometric Capture</p>
+              <p className="text-sm font-medium">Continue / Edit</p>
               <p className="text-[10px] text-slate-500">
-                {application.biometricStatus === "verified" ? "Verified" : application.biometricStatus === "captured" ? "Captured" : "Pending"}
+                Resume stepper form
               </p>
             </div>
           </Button>
         </Link>
-        <Link to={`/applications/${id}/payment`} className="block">
-          <Button variant="outline" className="w-full h-12 border-emerald-200 hover:bg-emerald-50">
+        <div className="block">
+          <Button variant="outline" disabled className="w-full h-12 border-emerald-200 bg-emerald-50/50">
             <DollarSign size={18} className="mr-2 text-emerald-600" />
             <div className="text-left">
               <p className="text-sm font-medium">Payment</p>
@@ -113,7 +113,7 @@ export default function ApplicationDetail() {
               </p>
             </div>
           </Button>
-        </Link>
+        </div>
         <Link to={`/verification/${id}`} className="block">
           <Button variant="outline" className="w-full h-12 border-amber-200 hover:bg-amber-50">
             <CheckCircle2 size={18} className="mr-2 text-amber-600" />

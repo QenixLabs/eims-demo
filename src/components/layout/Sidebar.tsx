@@ -13,10 +13,7 @@ import {
   Menu,
   X,
   ChevronRight,
-  Fingerprint,
-  CreditCard,
   Shield,
-  DollarSign,
 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { cn } from "@/lib/utils";
@@ -61,20 +58,7 @@ const navItems: NavItem[] = [
     badge: "Pending",
     roles: ["super_admin", "authority_admin", "verification_officer"],
   },
-  {
-    id: "biometrics",
-    label: "Biometric Capture",
-    icon: Fingerprint,
-    route: "/applications/1/biometrics",
-    roles: ["super_admin", "authority_admin", "operator"],
-  },
-  {
-    id: "payment",
-    label: "Payments",
-    icon: DollarSign,
-    route: "/applications/1/payment",
-    roles: ["super_admin", "authority_admin", "operator"],
-  },
+
   {
     id: "card_issuance",
     label: "Card Issuance",

@@ -14,8 +14,6 @@ import Authorities from "@/pages/Authorities";
 import UsersPage from "@/pages/Users";
 import VerifyCard from "@/pages/VerifyCard";
 import Settings from "@/pages/Settings";
-import BiometricCapture from "@/pages/BiometricCapture";
-import Payment from "@/pages/Payment";
 import AuditDashboard from "@/pages/AuditDashboard";
 import NotFound from "@/pages/NotFound";
 import { TourProvider } from "@/components/tour/TourProvider";
@@ -83,8 +81,7 @@ export default function App() {
                 <Route path="/applications/new" element={<NewApplication />} />
                 <Route path="/applications/:id/edit" element={<NewApplication />} />
                 <Route path="/applications/:id" element={<ApplicationDetail />} />
-                <Route path="/applications/:id/biometrics" element={<BiometricCapture />} />
-                <Route path="/applications/:id/payment" element={<Payment />} />
+
                 <Route
                   path="/verification"
                   element={

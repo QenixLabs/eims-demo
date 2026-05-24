@@ -77,6 +77,7 @@ export const paymentRouter = createRouter({
           .enum(["cash", "card", "upi", "bank_transfer", "online", "government_voucher"])
           .default("cash"),
         notes: z.string().optional(),
+        transactionId: z.string().optional(),
       })
     )
     .mutation(async ({ input }) => {
@@ -92,6 +93,7 @@ export const paymentRouter = createRouter({
         paymentMethod: input.paymentMethod,
         status: "pending",
         notes: input.notes || null,
+        transactionId: input.transactionId || null,
       });
 
       await db

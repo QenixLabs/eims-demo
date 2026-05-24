@@ -81,6 +81,7 @@ export default function App() {
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/applications" element={<Applications />} />
                 <Route path="/applications/new" element={<NewApplication />} />
+                <Route path="/applications/:id/edit" element={<NewApplication />} />
                 <Route path="/applications/:id" element={<ApplicationDetail />} />
                 <Route path="/applications/:id/biometrics" element={<BiometricCapture />} />
                 <Route path="/applications/:id/payment" element={<Payment />} />

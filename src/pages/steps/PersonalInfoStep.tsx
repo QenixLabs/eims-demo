@@ -1,0 +1,186 @@
+import { useRef } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { User, Camera } from "lucide-react";
+import type { FormState } from "../NewApplication";
+
+const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+
+interface Props {
+  formData: FormState;
+  updateField: (field: string, value: string) => void;
+}
+
+export function PersonalInfoStep({ formData, updateField }: Props) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      updateField("photoUrl", reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="lg:col-span-2 space-y-5">
+        <Card className="border-slate-200 shadow-sm">
+          <CardHeader className="pb-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                <User size={16} className="text-blue-600" />
+              </div>
+              <CardTitle className="text-base">Personal Information</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="space-y-2">
+                <Label htmlFor="fullName" className="text-sm">
+                  Full Name <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="fullName"
+                  value={formData.fullName}
+                  onChange={(e) => updateField("fullName", e.target.value)}
+                  placeholder="Enter full name"
+                  className="h-11"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="dateOfBirth" className="text-sm">
+                  Date of Birth <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="dateOfBirth"
+                  type="date"
+                  value={formData.dateOfBirth}
+                  onChange={(e) => updateField("dateOfBirth", e.target.value)}
+                  className="h-11"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+              <div className="space-y-2">
+                <Label className="text-sm">
+                  Gender <span className="text-red-500">*</span>
+                </Label>
+                <Select
+                  value={formData.gender}
+                  onValueChange={(v) => updateField("gender", v)}
+                >
+                  <SelectTrigger className="h-11">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Male">Male</SelectItem>
+                    <SelectItem value="Female">Female</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="bloodGroup" className="text-sm">Blood Group</Label>
+                <Select
+                  value={formData.bloodGroup}
+                  onValueChange={(v) => updateField("bloodGroup", v)}
+                >
+                  <SelectTrigger className="h-11">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {BLOOD_GROUPS.map((bg) => (
+                      <SelectItem key={bg} value={bg}>{bg}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="nationality" className="text-sm">
+                  Nationality <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="nationality"
+                  value={formData.nationality}
+                  onChange={(e) => updateField("nationality", e.target.value)}
+                  placeholder="Enter nationality"
+                  className="h-11"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div>
+        <Card className="border-slate-200 shadow-sm">
+          <CardHeader className="pb-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                <Camera size={16} className="text-blue-600" />
+              </div>
+              <CardTitle className="text-base">Photo</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handlePhotoUpload}
+              className="hidden"
+            />
+            {formData.photoUrl ? (
+              <div className="relative group">
+                <img
+                  src={formData.photoUrl}
+                  alt="Applicant"
+                  className="w-full aspect-[3/4] object-cover rounded-xl"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity"
+                >
+                  <span className="text-white text-sm font-medium">Change Photo</span>
+                </button>
+              </div>
+            ) : (
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="aspect-[3/4] bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-blue-400 hover:bg-blue-50/50 transition-all group"
+              >
+                <div className="w-16 h-16 rounded-full bg-white shadow-md flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <User size={28} className="text-slate-300 group-hover:text-blue-400 transition-colors" />
+                </div>
+                <div className="text-center">
+                  <span className="text-sm font-medium text-slate-600 group-hover:text-blue-600 transition-colors">
+                    Click to upload photo
+                  </span>
+                  <p className="text-xs text-slate-400 mt-1">JPG, PNG format. Max 5MB.</p>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+export function validatePersonalInfo(formData: FormState): boolean {
+  return !!(formData.fullName && formData.dateOfBirth && formData.gender && formData.nationality);
+}

@@ -223,8 +223,8 @@ export default function VerifyCard() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <InfoItem
                           icon={User}
-                          label="Full Name"
-                          value={verificationResult.application.fullName}
+                          label="Name"
+                          value={`${verificationResult.application.firstName || ""} ${verificationResult.application.lastName || ""}`}
                         />
                         <InfoItem
                           icon={Calendar}
@@ -238,7 +238,7 @@ export default function VerifyCard() {
                         />
                         <InfoItem
                           icon={CreditCard}
-                          label="Gender"
+                          label="Sex"
                           value={verificationResult.application.gender}
                         />
                       </div>

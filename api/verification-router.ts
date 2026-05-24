@@ -33,7 +33,8 @@ export const verificationRouter = createRouter({
       if (input?.search) {
         conditions.push(
           or(
-            like(identityApplications.fullName, `%${input.search}%`),
+            like(identityApplications.firstName, `%${input.search}%`),
+            like(identityApplications.lastName, `%${input.search}%`),
             like(identityApplications.identityNumber, `%${input.search}%`)
           )
         );
@@ -43,7 +44,8 @@ export const verificationRouter = createRouter({
         .select({
           id: identityApplications.id,
           identityNumber: identityApplications.identityNumber,
-          fullName: identityApplications.fullName,
+          firstName: identityApplications.firstName,
+          lastName: identityApplications.lastName,
           dateOfBirth: identityApplications.dateOfBirth,
           gender: identityApplications.gender,
           bloodGroup: identityApplications.bloodGroup,
@@ -80,7 +82,8 @@ export const verificationRouter = createRouter({
         .select({
           id: identityApplications.id,
           identityNumber: identityApplications.identityNumber,
-          fullName: identityApplications.fullName,
+          firstName: identityApplications.firstName,
+          lastName: identityApplications.lastName,
           dateOfBirth: identityApplications.dateOfBirth,
           gender: identityApplications.gender,
           bloodGroup: identityApplications.bloodGroup,

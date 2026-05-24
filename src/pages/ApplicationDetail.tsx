@@ -2,7 +2,6 @@ import { useParams, Link } from "react-router";
 import { trpc } from "@/providers/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   ArrowLeft,
   User,
@@ -19,7 +18,6 @@ import {
   Pencil,
   DollarSign,
   CheckCircle2,
-  AlertCircle,
 } from "lucide-react";
 
 export default function ApplicationDetail() {
@@ -74,10 +72,10 @@ export default function ApplicationDetail() {
       <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-blue-500/25">
-            {application.fullName.split(" ").map((n) => n[0]).join("").toUpperCase()}
+            {(application.firstName?.[0] || "") + (application.lastName?.[0] || "")}
           </div>
           <div>
-            <h2 className="text-xl font-bold text-slate-900">{application.fullName}</h2>
+            <h2 className="text-xl font-bold text-slate-900">{application.firstName} {application.lastName}</h2>
             <p className="text-sm text-slate-500">
               Application #{application.id.toString().padStart(4, "0")}
             </p>
@@ -176,9 +174,13 @@ export default function ApplicationDetail() {
           </CardHeader>
           <CardContent className="space-y-4">
             <InfoRow icon={Calendar} label="Date of Birth" value={application.dateOfBirth} />
-            <InfoRow icon={User} label="Gender" value={application.gender} />
+            <InfoRow icon={User} label="Sex" value={application.gender} />
             <InfoRow icon={Globe} label="Nationality" value={application.nationality} />
             <InfoRow icon={Droplets} label="Blood Group" value={application.bloodGroup || "N/A"} />
+            <InfoRow icon={User} label="Marital Status" value={application.maritalStatus || "N/A"} />
+            <InfoRow icon={User} label="Education Level" value={application.educationLevel || "N/A"} />
+            <InfoRow icon={User} label="Profession" value={application.profession || "N/A"} />
+            <InfoRow icon={MapPin} label="Professional Address" value={application.professionalAddress || "N/A"} />
           </CardContent>
         </Card>
 

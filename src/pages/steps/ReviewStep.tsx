@@ -29,12 +29,18 @@ export function ReviewStep({ formData }: Props) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-            <ReviewItem label="Full Name" value={formData.fullName} />
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+            <ReviewItem label="First Name" value={formData.firstName} />
+            <ReviewItem label="Middle Name" value={formData.middleName || "N/A"} />
+            <ReviewItem label="Last Name" value={formData.lastName} />
             <ReviewItem label="Date of Birth" value={formData.dateOfBirth} />
-            <ReviewItem label="Gender" value={formData.gender} />
+            <ReviewItem label="Sex" value={formData.gender} />
             <ReviewItem label="Blood Group" value={formData.bloodGroup || "N/A"} />
             <ReviewItem label="Nationality" value={formData.nationality} />
+            <ReviewItem label="Marital Status" value={formData.maritalStatus || "N/A"} />
+            <ReviewItem label="Education Level" value={formData.educationLevel || "N/A"} />
+            <ReviewItem label="Profession" value={formData.profession || "N/A"} />
+            <ReviewItem label="Professional Address" value={formData.professionalAddress || "N/A"} className="col-span-2" />
           </div>
           {formData.photoUrl && (
             <div className="mt-4 flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
@@ -185,7 +191,7 @@ export function ReviewStep({ formData }: Props) {
               <ShieldCheck size={16} className="text-blue-300" />
               <span className="text-xs font-medium text-blue-300 uppercase tracking-wider">Earth Card</span>
             </div>
-            <p className="text-lg font-bold">{formData.fullName || "Applicant Name"}</p>
+            <p className="text-lg font-bold">{`${formData.firstName} ${formData.lastName}` || "Applicant Name"}</p>
             <p className="text-xs text-blue-300 mt-1">
               DOB: {formData.dateOfBirth || "N/A"} | {formData.gender || "N/A"}
             </p>

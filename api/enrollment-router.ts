@@ -35,7 +35,8 @@ export const enrollmentRouter = createRouter({
       if (input?.search) {
         conditions.push(
           or(
-            like(identityApplications.fullName, `%${input.search}%`),
+            like(identityApplications.firstName, `%${input.search}%`),
+            like(identityApplications.lastName, `%${input.search}%`),
             like(identityApplications.identityNumber, `%${input.search}%`),
             like(identityApplications.mobileNumber, `%${input.search}%`)
           )
@@ -66,7 +67,9 @@ export const enrollmentRouter = createRouter({
         .select({
           id: identityApplications.id,
           identityNumber: identityApplications.identityNumber,
-          fullName: identityApplications.fullName,
+          firstName: identityApplications.firstName,
+          middleName: identityApplications.middleName,
+          lastName: identityApplications.lastName,
           dateOfBirth: identityApplications.dateOfBirth,
           gender: identityApplications.gender,
           bloodGroup: identityApplications.bloodGroup,
@@ -126,11 +129,17 @@ export const enrollmentRouter = createRouter({
   create: publicQuery
     .input(
       z.object({
-        fullName: z.string().min(1),
+        firstName: z.string().min(1),
+        middleName: z.string().optional(),
+        lastName: z.string().min(1),
         dateOfBirth: z.string().min(1),
         gender: z.enum(["Male", "Female", "Other"]),
         bloodGroup: z.string().optional(),
         nationality: z.string().min(1),
+        maritalStatus: z.enum(["Single", "Married", "Divorced", "Widowed"]).optional(),
+        educationLevel: z.string().optional(),
+        profession: z.string().optional(),
+        professionalAddress: z.string().optional(),
         mobileNumber: z.string().min(1),
         email: z.string().email().optional(),
         address: z.string().min(1),
@@ -144,11 +153,17 @@ export const enrollmentRouter = createRouter({
       const result = await db
         .insert(identityApplications)
         .values({
-          fullName: input.fullName,
+          firstName: input.firstName,
+          middleName: input.middleName || null,
+          lastName: input.lastName,
           dateOfBirth: input.dateOfBirth,
           gender: input.gender,
           bloodGroup: input.bloodGroup || null,
           nationality: input.nationality,
+          maritalStatus: input.maritalStatus || null,
+          educationLevel: input.educationLevel || null,
+          profession: input.profession || null,
+          professionalAddress: input.professionalAddress || null,
           mobileNumber: input.mobileNumber,
           email: input.email || null,
           address: input.address,
@@ -164,11 +179,17 @@ export const enrollmentRouter = createRouter({
     .input(
       z.object({
         id: z.number(),
-        fullName: z.string().min(1).optional(),
+        firstName: z.string().min(1).optional(),
+        middleName: z.string().optional(),
+        lastName: z.string().min(1).optional(),
         dateOfBirth: z.string().optional(),
         gender: z.enum(["Male", "Female", "Other"]).optional(),
         bloodGroup: z.string().optional(),
         nationality: z.string().optional(),
+        maritalStatus: z.enum(["Single", "Married", "Divorced", "Widowed"]).optional(),
+        educationLevel: z.string().optional(),
+        profession: z.string().optional(),
+        professionalAddress: z.string().optional(),
         mobileNumber: z.string().optional(),
         email: z.string().email().optional(),
         address: z.string().optional(),

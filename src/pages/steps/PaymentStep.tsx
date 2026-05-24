@@ -16,7 +16,6 @@ import {
   CreditCard,
   Receipt,
   CheckCircle2,
-  Clock,
   Loader2,
   AlertTriangle,
   FileText,
@@ -133,9 +132,9 @@ export function PaymentStep({
               <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
                 <div className="flex items-center justify-between mb-3">
                   <h5 className="text-sm font-semibold text-slate-900">Payment Recorded</h5>
-                  <Badge className="bg-amber-100 text-amber-700">
-                    <Clock size={12} className="mr-1" />
-                    {payment.status || "pending"}
+                  <Badge className="bg-emerald-100 text-emerald-700">
+                    <CheckCircle2 size={12} className="mr-1" />
+                    Paid
                   </Badge>
                 </div>
                 <div className="grid grid-cols-2 gap-3 text-sm">
@@ -155,15 +154,15 @@ export function PaymentStep({
                   </div>
                   <div>
                     <p className="text-slate-500 text-xs">Status</p>
-                    <p className="font-medium text-amber-600">Awaiting Verification</p>
+                    <p className="font-medium text-emerald-600">Completed</p>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-start gap-2 p-3 bg-blue-50 rounded-xl border border-blue-200">
-                <CheckCircle2 size={16} className="text-blue-600 mt-0.5 shrink-0" />
-                <p className="text-xs text-blue-700">
-                  Payment has been recorded. It will be verified by an officer before card issuance.
+              <div className="flex items-start gap-2 p-3 bg-emerald-50 rounded-xl border border-emerald-200">
+                <CheckCircle2 size={16} className="text-emerald-600 mt-0.5 shrink-0" />
+                <p className="text-xs text-emerald-700">
+                  Payment recorded successfully. Proceed to submit the application.
                 </p>
               </div>
             </div>
@@ -220,12 +219,12 @@ export function PaymentStep({
             </div>
           </div>
 
-          <div className="flex items-start gap-2 p-3 bg-amber-50 rounded-xl border border-amber-200">
-            <AlertTriangle size={16} className="text-amber-600 mt-0.5 shrink-0" />
+          <div className="flex items-start gap-2 p-3 bg-emerald-50 rounded-xl border border-emerald-200">
+            <CheckCircle2 size={16} className="text-emerald-600 mt-0.5 shrink-0" />
             <div>
-              <p className="text-xs font-medium text-amber-900">Important</p>
-              <p className="text-[10px] text-amber-700 mt-0.5">
-                Identity card will be issued only after payment verification.
+              <p className="text-xs font-medium text-emerald-900">Important</p>
+              <p className="text-[10px] text-emerald-700 mt-0.5">
+                Identity card will be issued after application submission.
               </p>
             </div>
           </div>

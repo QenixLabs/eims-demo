@@ -7,7 +7,7 @@ import {
   authorities,
   biometrics,
 } from "@db/schema";
-import { eq, desc, count, and } from "drizzle-orm";
+import { eq, desc, count } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import QRCode from "qrcode";
 
@@ -32,7 +32,9 @@ function generateVerificationToken(): string {
 function generateChipData(app: any, identityNumber: string, authority: any, bioData: any): any {
   return {
     identityNumber,
-    fullName: app.fullName,
+    firstName: app.firstName,
+    middleName: app.middleName,
+    lastName: app.lastName,
     dateOfBirth: app.dateOfBirth,
     gender: app.gender,
     nationality: app.nationality,
@@ -44,7 +46,7 @@ function generateChipData(app: any, identityNumber: string, authority: any, bioD
     chipFormat: "ISO7816",
     dataStructure: {
       EF_DG1: {
-        MRZ: `${app.fullName.substring(0, 39).padEnd(39)}${app.dateOfBirth.replace(/-/g, "")}${app.gender === "Male" ? "M" : app.gender === "Female" ? "F" : "X"}`,
+        MRZ: `${(app.firstName + " " + app.lastName).substring(0, 39).padEnd(39)}${app.dateOfBirth.replace(/-/g, "")}${app.gender === "Male" ? "M" : app.gender === "Female" ? "F" : "X"}`,
       },
       EF_DG2: {
         photoReference: app.photoUrl || "none",
@@ -114,7 +116,8 @@ export const cardRouter = createRouter({
           issuedAt: identityCards.issuedAt,
           expiresAt: identityCards.expiresAt,
           isActive: identityCards.isActive,
-          fullName: identityApplications.fullName,
+          firstName: identityApplications.firstName,
+          lastName: identityApplications.lastName,
           dateOfBirth: identityApplications.dateOfBirth,
           gender: identityApplications.gender,
           nationality: identityApplications.nationality,
@@ -136,7 +139,8 @@ export const cardRouter = createRouter({
         return result.filter(
           (r) =>
             r.identityNumber?.includes(input.search!) ||
-            r.fullName?.toLowerCase().includes(input.search!.toLowerCase()) ||
+            r.firstName?.toLowerCase().includes(input.search!.toLowerCase()) ||
+            r.lastName?.toLowerCase().includes(input.search!.toLowerCase()) ||
             r.cardSerialNumber?.includes(input.search!)
         );
       }
@@ -170,7 +174,8 @@ export const cardRouter = createRouter({
         .select({
           id: identityApplications.id,
           identityNumber: identityApplications.identityNumber,
-          fullName: identityApplications.fullName,
+          firstName: identityApplications.firstName,
+          lastName: identityApplications.lastName,
           dateOfBirth: identityApplications.dateOfBirth,
           gender: identityApplications.gender,
           bloodGroup: identityApplications.bloodGroup,
@@ -265,7 +270,9 @@ export const cardRouter = createRouter({
       expiresAt.setFullYear(expiresAt.getFullYear() + 5);
 
       const cardDataObj = {
-        fullName: app.fullName,
+        firstName: app.firstName,
+    middleName: app.middleName,
+    lastName: app.lastName,
         dateOfBirth: app.dateOfBirth,
         gender: app.gender,
         nationality: app.nationality,

@@ -320,15 +320,11 @@ export default function Dashboard() {
               >
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-blue-700 text-xs font-semibold group-hover:scale-110 transition-transform">
-                    {app.fullName
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")
-                      .toUpperCase()}
+                    {(app.firstName?.[0] || "") + (app.lastName?.[0] || "")}
                   </div>
                   <div>
                     <p className="text-sm font-medium text-slate-900 group-hover:text-blue-600 transition-colors">
-                      {app.fullName}
+                      {app.firstName} {app.lastName}
                     </p>
                     <p className="text-xs text-slate-500">
                       ID: {app.id.toString().padStart(4, "0")}

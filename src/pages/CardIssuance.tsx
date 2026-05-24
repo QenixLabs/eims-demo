@@ -127,10 +127,10 @@ export default function CardIssuance() {
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-100 to-teal-100 flex items-center justify-center text-emerald-700 text-xs font-semibold">
-                            {app.fullName.split(" ").map((n) => n[0]).join("").toUpperCase()}
+                            {(app.firstName?.[0] || "") + (app.lastName?.[0] || "")}
                           </div>
                           <div>
-                            <p className="font-medium text-slate-900">{app.fullName}</p>
+                            <p className="font-medium text-slate-900">{app.firstName} {app.lastName}</p>
                             <p className="text-xs text-slate-500">{app.mobileNumber}</p>
                           </div>
                         </div>
@@ -196,9 +196,9 @@ export default function CardIssuance() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-blue-700 text-[10px] font-semibold">
-                          {card.fullName?.split(" ").map((n) => n[0]).join("").toUpperCase()}
+                          {(card.firstName?.[0] || "") + (card.lastName?.[0] || "")}
                         </div>
-                        <span className="font-medium text-slate-900">{card.fullName}</span>
+                        <span className="font-medium text-slate-900">{card.firstName} {card.lastName}</span>
                       </div>
                     </td>
                     <td className="px-4 py-3 text-slate-500 text-sm">

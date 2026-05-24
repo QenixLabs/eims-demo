@@ -202,15 +202,11 @@ export default function Applications() {
                     <td className="px-5 py-4">
                       <Link to={`/applications/${app.id}`} className="flex items-center gap-3 group/link">
                         <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-blue-700 text-xs font-semibold group-hover/link:scale-110 transition-transform">
-                          {app.fullName
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")
-                            .toUpperCase()}
+                          {(app.firstName?.[0] || "") + (app.lastName?.[0] || "")}
                         </div>
                         <div>
                           <p className="font-medium text-slate-900 group-hover/link:text-blue-600 transition-colors">
-                            {app.fullName}
+                            {app.firstName} {app.lastName}
                           </p>
                           <p className="text-xs text-slate-500">
                             {app.mobileNumber}

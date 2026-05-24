@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -9,10 +9,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { User, Camera } from "lucide-react";
+import { User, Camera, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import type { FormState } from "../NewApplication";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+const MARITAL_STATUSES = ["Single", "Married", "Divorced", "Widowed"];
 
 interface Props {
   formData: FormState;
@@ -21,16 +23,40 @@ interface Props {
 
 export function PersonalInfoStep({ formData, updateField }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [nationalityMode, setNationalityMode] = useState<"Congolis" | "Others">(
+    formData.nationality === "Congolis" ? "Congolis" : formData.nationality ? "Others" : "Congolis"
+  );
+  const [uploading, setUploading] = useState(false);
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      updateField("photoUrl", reader.result as string);
-    };
-    reader.readAsDataURL(file);
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || "Upload failed");
+        return;
+      }
+      updateField("photoUrl", data.url);
+    } catch {
+      toast.error("Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleNationalityChange = (mode: "Congolis" | "Others") => {
+    setNationalityMode(mode);
+    if (mode === "Congolis") {
+      updateField("nationality", "Congolis");
+    } else {
+      updateField("nationality", "");
+    }
   };
 
   return (
@@ -46,19 +72,47 @@ export function PersonalInfoStep({ formData, updateField }: Props) {
             </div>
           </CardHeader>
           <CardContent className="space-y-5">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {/* Name fields */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
               <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-sm">
-                  Full Name <span className="text-red-500">*</span>
+                <Label htmlFor="firstName" className="text-sm">
+                  First Name <span className="text-red-500">*</span>
                 </Label>
                 <Input
-                  id="fullName"
-                  value={formData.fullName}
-                  onChange={(e) => updateField("fullName", e.target.value)}
-                  placeholder="Enter full name"
+                  id="firstName"
+                  value={formData.firstName}
+                  onChange={(e) => updateField("firstName", e.target.value)}
+                  placeholder="Enter first name"
                   className="h-11"
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="middleName" className="text-sm">
+                  Middle Name
+                </Label>
+                <Input
+                  id="middleName"
+                  value={formData.middleName}
+                  onChange={(e) => updateField("middleName", e.target.value)}
+                  placeholder="Enter middle name"
+                  className="h-11"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName" className="text-sm">
+                  Last Name <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="lastName"
+                  value={formData.lastName}
+                  onChange={(e) => updateField("lastName", e.target.value)}
+                  placeholder="Enter last name"
+                  className="h-11"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <Label htmlFor="dateOfBirth" className="text-sm">
                   Date of Birth <span className="text-red-500">*</span>
@@ -71,12 +125,9 @@ export function PersonalInfoStep({ formData, updateField }: Props) {
                   className="h-11"
                 />
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
               <div className="space-y-2">
                 <Label className="text-sm">
-                  Gender <span className="text-red-500">*</span>
+                  Sex <span className="text-red-500">*</span>
                 </Label>
                 <Select
                   value={formData.gender}
@@ -92,6 +143,9 @@ export function PersonalInfoStep({ formData, updateField }: Props) {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
               <div className="space-y-2">
                 <Label htmlFor="bloodGroup" className="text-sm">Blood Group</Label>
                 <Select
@@ -109,17 +163,82 @@ export function PersonalInfoStep({ formData, updateField }: Props) {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="nationality" className="text-sm">
+                <Label className="text-sm">
+                  Marital Status
+                </Label>
+                <Select
+                  value={formData.maritalStatus}
+                  onValueChange={(v) => updateField("maritalStatus", v)}
+                >
+                  <SelectTrigger className="h-11">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {MARITAL_STATUSES.map((ms) => (
+                      <SelectItem key={ms} value={ms}>{ms}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm">
                   Nationality <span className="text-red-500">*</span>
                 </Label>
+                <Select
+                  value={nationalityMode}
+                  onValueChange={(v) => handleNationalityChange(v as "Congolis" | "Others")}
+                >
+                  <SelectTrigger className="h-11">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Congolis">Congolis</SelectItem>
+                    <SelectItem value="Others">Others</SelectItem>
+                  </SelectContent>
+                </Select>
+                {nationalityMode === "Others" && (
+                  <Input
+                    value={formData.nationality === "Congolis" ? "" : formData.nationality}
+                    onChange={(e) => updateField("nationality", e.target.value)}
+                    placeholder="Enter nationality"
+                    className="h-10 mt-2"
+                  />
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="space-y-2">
+                <Label htmlFor="educationLevel" className="text-sm">Education Level</Label>
                 <Input
-                  id="nationality"
-                  value={formData.nationality}
-                  onChange={(e) => updateField("nationality", e.target.value)}
-                  placeholder="Enter nationality"
+                  id="educationLevel"
+                  value={formData.educationLevel}
+                  onChange={(e) => updateField("educationLevel", e.target.value)}
+                  placeholder="Enter education level"
                   className="h-11"
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="profession" className="text-sm">Profession</Label>
+                <Input
+                  id="profession"
+                  value={formData.profession}
+                  onChange={(e) => updateField("profession", e.target.value)}
+                  placeholder="Enter profession"
+                  className="h-11"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="professionalAddress" className="text-sm">Professional Address</Label>
+              <Input
+                id="professionalAddress"
+                value={formData.professionalAddress}
+                onChange={(e) => updateField("professionalAddress", e.target.value)}
+                placeholder="Enter professional address"
+                className="h-11"
+              />
             </div>
           </CardContent>
         </Card>
@@ -143,7 +262,12 @@ export function PersonalInfoStep({ formData, updateField }: Props) {
               onChange={handlePhotoUpload}
               className="hidden"
             />
-            {formData.photoUrl ? (
+            {uploading ? (
+              <div className="aspect-[3/4] bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-3">
+                <Loader2 size={32} className="text-blue-500 animate-spin" />
+                <span className="text-sm font-medium text-slate-600">Uploading...</span>
+              </div>
+            ) : formData.photoUrl ? (
               <div className="relative group">
                 <img
                   src={formData.photoUrl}
@@ -182,5 +306,5 @@ export function PersonalInfoStep({ formData, updateField }: Props) {
 }
 
 export function validatePersonalInfo(formData: FormState): boolean {
-  return !!(formData.fullName && formData.dateOfBirth && formData.gender && formData.nationality);
+  return !!(formData.firstName && formData.lastName && formData.dateOfBirth && formData.gender && formData.nationality);
 }

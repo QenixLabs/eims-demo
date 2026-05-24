@@ -46,11 +46,17 @@ export interface DocumentEntry {
 }
 
 export interface FormState {
-  fullName: string;
+  firstName: string;
+  middleName: string;
+  lastName: string;
   dateOfBirth: string;
   gender: "Male" | "Female" | "Other";
   bloodGroup: string;
   nationality: string;
+  maritalStatus: string;
+  educationLevel: string;
+  profession: string;
+  professionalAddress: string;
   photoUrl: string;
   mobileNumber: string;
   email: string;
@@ -78,11 +84,17 @@ export interface FormState {
 }
 
 const INITIAL_FORM_STATE: FormState = {
-  fullName: "",
+  firstName: "",
+  middleName: "",
+  lastName: "",
   dateOfBirth: "",
   gender: "Male",
   bloodGroup: "",
-  nationality: "",
+  nationality: "Congolis",
+  maritalStatus: "",
+  educationLevel: "",
+  profession: "",
+  professionalAddress: "",
   photoUrl: "",
   mobileNumber: "",
   email: "",
@@ -193,11 +205,17 @@ export default function NewApplication() {
       dispatch({
         type: "LOAD_EXISTING",
         data: {
-          fullName: existing.fullName,
+          firstName: existing.firstName,
+          middleName: existing.middleName || "",
+          lastName: existing.lastName,
           dateOfBirth: existing.dateOfBirth,
           gender: existing.gender as "Male" | "Female" | "Other",
           bloodGroup: existing.bloodGroup || "",
           nationality: existing.nationality,
+          maritalStatus: existing.maritalStatus || "",
+          educationLevel: existing.educationLevel || "",
+          profession: existing.profession || "",
+          professionalAddress: existing.professionalAddress || "",
           photoUrl: existing.photoUrl || "",
           mobileNumber: existing.mobileNumber,
           email: existing.email || "",
@@ -220,7 +238,7 @@ export default function NewApplication() {
     if (isEditMode && existingBiometrics) {
       let fingerprints: string[] = [];
       try {
-        fingerprints = JSON.parse(existingBiometrics.fingerprints || "[]");
+        fingerprints = JSON.parse((existingBiometrics.fingerprints as string) || "[]");
       } catch {
         fingerprints = [];
       }
@@ -232,11 +250,11 @@ export default function NewApplication() {
           rightIris: existingBiometrics.rightIris || "",
           facePhotoUrl: existingBiometrics.facePhotoUrl || "",
           livenessCheck: !!existingBiometrics.livenessCheck,
-          livenessScore: existingBiometrics.livenessScore || 0,
-          captureQuality: existingBiometrics.captureQuality || "high",
+          livenessScore: Number(existingBiometrics.livenessScore || 0),
+          captureQuality: (existingBiometrics.captureQuality || "high") as "low" | "medium" | "high" | "excellent",
           isCaptured: true,
           isVerified: !!existingBiometrics.verifiedAt,
-          dedupResult: existingBiometrics.deduplicationResult || null,
+          dedupResult: (existingBiometrics.deduplicationResult || null) as "pass" | "fail" | null,
         },
       });
     }
@@ -380,17 +398,23 @@ export default function NewApplication() {
 
   const getEnrollmentPayload = () => {
     if (!platformUser) return null;
-    return {
-      fullName: formData.fullName || undefined,
-      dateOfBirth: formData.dateOfBirth || undefined,
-      gender: formData.gender,
-      bloodGroup: formData.bloodGroup || undefined,
-      nationality: formData.nationality || undefined,
-      mobileNumber: formData.mobileNumber || undefined,
-      email: formData.email || undefined,
-      address: formData.address || undefined,
-      photoUrl: formData.photoUrl || undefined,
-    };
+    const payload: Record<string, any> = {};
+    if (formData.firstName) payload.firstName = formData.firstName;
+    if (formData.middleName) payload.middleName = formData.middleName;
+    if (formData.lastName) payload.lastName = formData.lastName;
+    if (formData.dateOfBirth) payload.dateOfBirth = formData.dateOfBirth;
+    if (formData.gender) payload.gender = formData.gender;
+    if (formData.bloodGroup) payload.bloodGroup = formData.bloodGroup;
+    if (formData.nationality) payload.nationality = formData.nationality;
+    if (formData.maritalStatus) payload.maritalStatus = formData.maritalStatus;
+    if (formData.educationLevel) payload.educationLevel = formData.educationLevel;
+    if (formData.profession) payload.profession = formData.profession;
+    if (formData.professionalAddress) payload.professionalAddress = formData.professionalAddress;
+    if (formData.mobileNumber) payload.mobileNumber = formData.mobileNumber;
+    if (formData.email) payload.email = formData.email;
+    if (formData.address) payload.address = formData.address;
+    if (formData.photoUrl) payload.photoUrl = formData.photoUrl;
+    return payload;
   };
 
   const handleSaveDraft = async () => {
@@ -413,13 +437,21 @@ export default function NewApplication() {
         await updateMutation.mutateAsync({ id: savedApplicationId, ...payload });
       } else {
         await createMutation.mutateAsync({
-          ...payload,
-          fullName: formData.fullName,
+          firstName: formData.firstName,
+          middleName: formData.middleName,
+          lastName: formData.lastName,
           dateOfBirth: formData.dateOfBirth,
           gender: formData.gender,
+          bloodGroup: formData.bloodGroup || undefined,
           nationality: formData.nationality,
+          maritalStatus: (formData.maritalStatus || undefined) as "Single" | "Married" | "Divorced" | "Widowed" | undefined,
+          educationLevel: formData.educationLevel || undefined,
+          profession: formData.profession || undefined,
+          professionalAddress: formData.professionalAddress || undefined,
           mobileNumber: formData.mobileNumber,
+          email: formData.email || undefined,
           address: formData.address,
+          photoUrl: formData.photoUrl || undefined,
           authorityId: platformUser.authorityId || 1,
           createdBy: platformUser.id,
         });
@@ -448,7 +480,9 @@ export default function NewApplication() {
       // Create or update enrollment
       if (!appId) {
         const created = await createMutation.mutateAsync({
-          fullName: formData.fullName,
+          firstName: formData.firstName,
+          middleName: formData.middleName,
+          lastName: formData.lastName,
           dateOfBirth: formData.dateOfBirth,
           gender: formData.gender,
           nationality: formData.nationality,

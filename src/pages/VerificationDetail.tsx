@@ -157,15 +157,11 @@ export default function VerificationDetail() {
             <CardContent>
               <div className="flex items-start gap-4 mb-6">
                 <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-lg font-medium shrink-0">
-                  {application.fullName
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .toUpperCase()}
+                  {(application.firstName?.[0] || "") + (application.lastName?.[0] || "")}
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-slate-900">
-                    {application.fullName}
+                    {application.firstName} {application.lastName}
                   </h3>
                   <p className="text-sm text-slate-500">
                     ID: {application.id.toString().padStart(4, "0")}
@@ -186,7 +182,7 @@ export default function VerificationDetail() {
                 />
                 <InfoItem
                   icon={User}
-                  label="Gender"
+                  label="Sex"
                   value={application.gender}
                 />
                 <InfoItem

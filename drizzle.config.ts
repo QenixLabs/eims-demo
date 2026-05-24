@@ -19,7 +19,7 @@ export default defineConfig({
     password: url.password,
     database: url.pathname.slice(1),
     ssl: {
-      rejectUnauthorized: true,
+      rejectUnauthorized: false,
     },
   },
 });

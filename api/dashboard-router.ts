@@ -120,7 +120,8 @@ export const dashboardRouter = createRouter({
     const recentApplications = await db
       .select({
         id: identityApplications.id,
-        fullName: identityApplications.fullName,
+        firstName: identityApplications.firstName,
+        lastName: identityApplications.lastName,
         status: identityApplications.status,
         createdAt: identityApplications.createdAt,
       })

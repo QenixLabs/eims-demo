@@ -84,6 +84,7 @@ export const paymentRouter = createRouter({
       const db = getDb();
 
       const invoiceNumber = generateInvoiceNumber();
+      const hasReceipt = !!input.transactionId;
 
       const result = await db.insert(payments).values({
         applicationId: input.applicationId,
@@ -91,17 +92,18 @@ export const paymentRouter = createRouter({
         amount: input.amount.toString(),
         currency: input.currency,
         paymentMethod: input.paymentMethod,
-        status: "pending",
+        status: hasReceipt ? "completed" : "pending",
         notes: input.notes || null,
         transactionId: input.transactionId || null,
+        paidAt: hasReceipt ? new Date() : null,
       });
 
       await db
         .update(identityApplications)
         .set({
           paymentAmount: input.amount.toString(),
-          paymentStatus: "pending",
-          status: "payment_pending",
+          paymentStatus: hasReceipt ? "completed" : "pending",
+          status: hasReceipt ? "payment_completed" : "payment_pending",
         })
         .where(eq(identityApplications.id, input.applicationId));
 

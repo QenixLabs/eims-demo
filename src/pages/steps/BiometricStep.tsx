@@ -8,13 +8,12 @@ import {
   Camera,
   Shield,
   CheckCircle2,
-  XCircle,
   Loader2,
-  Zap,
-  Activity,
   HardDrive,
+  Activity,
   AlertCircle,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { FormState } from "../NewApplication";
 
 interface Props {
@@ -56,6 +55,7 @@ export function BiometricStep({
   verifyLoading,
   dedupLoading,
 }: Props) {
+  const { t } = useTranslation(["biometric", "common"]);
   const [capturingFingerprints, setCapturingFingerprints] = useState(false);
   const [capturingIris, setCapturingIris] = useState(false);
   const { biometrics } = formData;
@@ -92,8 +92,7 @@ export function BiometricStep({
         <div className="flex items-start gap-2 p-3 bg-amber-50 rounded-xl border border-amber-200">
           <AlertCircle size={16} className="text-amber-600 mt-0.5 shrink-0" />
           <p className="text-xs text-amber-700">
-            Save the application as a draft first before submitting biometric data to the server.
-            You can still simulate captures below.
+            {t("saveDraftFirst")}
           </p>
         </div>
       )}
@@ -104,31 +103,31 @@ export function BiometricStep({
           <CardHeader className="pb-4">
             <CardTitle className="text-base flex items-center gap-2">
               <Shield size={18} className="text-blue-600" />
-              Biometric Capture
+              {t("captureTitle")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
-              <h5 className="text-sm font-semibold text-slate-900 mb-3">Device Information</h5>
+              <h5 className="text-sm font-semibold text-slate-900 mb-3">{t("deviceInfo")}</h5>
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div>
-                  <p className="text-slate-500">Fingerprint Scanner</p>
+                  <p className="text-slate-500">{t("fingerprintScanner")}</p>
                   <p className="font-medium text-slate-700">SecuGen Hamster Pro 20</p>
                 </div>
                 <div>
-                  <p className="text-slate-500">Iris Scanner</p>
+                  <p className="text-slate-500">{t("irisScanner")}</p>
                   <p className="font-medium text-slate-700">IrisGuard IG-100</p>
                 </div>
                 <div>
-                  <p className="text-slate-500">Status</p>
+                  <p className="text-slate-500">{t("status")}</p>
                   <p className="font-medium text-emerald-600 flex items-center gap-1">
                     <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                    Connected (Simulated)
+                    {t("connectedSimulated")}
                   </p>
                 </div>
                 <div>
-                  <p className="text-slate-500">Certified</p>
-                  <p className="font-medium text-emerald-600">Yes</p>
+                  <p className="text-slate-500">{t("certified")}</p>
+                  <p className="font-medium text-emerald-600">{t("common:yes")}</p>
                 </div>
               </div>
             </div>
@@ -140,11 +139,11 @@ export function BiometricStep({
                 className="w-full h-11 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500"
               >
                 {capturingFingerprints ? (
-                  <><Loader2 size={16} className="mr-2 animate-spin" />Capturing...</>
+                  <><Loader2 size={16} className="mr-2 animate-spin" />{t("capturing")}</>
                 ) : hasFingerprints ? (
-                  <><CheckCircle2 size={16} className="mr-2" />Re-capture Fingerprints</>
+                  <><CheckCircle2 size={16} className="mr-2" />{t("recaptureFingerprints")}</>
                 ) : (
-                  <><Fingerprint size={16} className="mr-2" />Capture Fingerprints</>
+                  <><Fingerprint size={16} className="mr-2" />{t("captureFingerprints")}</>
                 )}
               </Button>
 
@@ -154,11 +153,11 @@ export function BiometricStep({
                 className="w-full h-11 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500"
               >
                 {capturingIris ? (
-                  <><Loader2 size={16} className="mr-2 animate-spin" />Scanning...</>
+                  <><Loader2 size={16} className="mr-2 animate-spin" />{t("scanning")}</>
                 ) : hasIris ? (
-                  <><CheckCircle2 size={16} className="mr-2" />Re-scan Iris</>
+                  <><CheckCircle2 size={16} className="mr-2" />{t("rescanIris")}</>
                 ) : (
-                  <><Eye size={16} className="mr-2" />Scan Iris</>
+                  <><Eye size={16} className="mr-2" />{t("scanIris")}</>
                 )}
               </Button>
 
@@ -180,9 +179,9 @@ export function BiometricStep({
                   className="w-full h-11 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600"
                 >
                   {captureLoading ? (
-                    <><Loader2 size={16} className="mr-2 animate-spin" />Submitting...</>
+                    <><Loader2 size={16} className="mr-2 animate-spin" />{t("submitting")}</>
                   ) : (
-                    <><HardDrive size={16} className="mr-2" />Submit Biometric Data</>
+                    <><HardDrive size={16} className="mr-2" />{t("submitBiometric")}</>
                   )}
                 </Button>
               )}
@@ -195,9 +194,9 @@ export function BiometricStep({
                   className="w-full h-11 border-emerald-200 text-emerald-700 hover:bg-emerald-50"
                 >
                   {verifyLoading ? (
-                    <><Loader2 size={16} className="mr-2 animate-spin" />Verifying...</>
+                    <><Loader2 size={16} className="mr-2 animate-spin" />{t("verifying")}</>
                   ) : (
-                    <><CheckCircle2 size={16} className="mr-2" />Verify Biometrics</>
+                    <><CheckCircle2 size={16} className="mr-2" />{t("verifyBiometrics")}</>
                   )}
                 </Button>
               )}
@@ -210,9 +209,9 @@ export function BiometricStep({
                   className="w-full h-11"
                 >
                   {dedupLoading ? (
-                    <><Loader2 size={16} className="mr-2 animate-spin" />Checking...</>
+                    <><Loader2 size={16} className="mr-2 animate-spin" />{t("checking")}</>
                   ) : (
-                    <><Activity size={16} className="mr-2" />Run Deduplication Check</>
+                    <><Activity size={16} className="mr-2" />{t("runDedup")}</>
                   )}
                 </Button>
               )}
@@ -225,7 +224,7 @@ export function BiometricStep({
           <CardHeader className="pb-4">
             <CardTitle className="text-base flex items-center gap-2">
               <HardDrive size={18} className="text-blue-600" />
-              Captured Biometric Data
+              {t("capturedData")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -235,7 +234,7 @@ export function BiometricStep({
                   <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
                     <h5 className="text-sm font-semibold text-slate-900 mb-3 flex items-center gap-2">
                       <Fingerprint size={14} className="text-blue-600" />
-                      Fingerprints (10)
+                      {t("fingerprints10")}
                     </h5>
                     <div className="grid grid-cols-2 gap-2">
                       {biometrics.fingerprints.map((fp, i) => (
@@ -251,7 +250,7 @@ export function BiometricStep({
                   <div className="grid grid-cols-2 gap-3">
                     <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
                       <p className="text-xs text-slate-500 mb-1 flex items-center gap-1">
-                        <Eye size={12} /> Left Iris
+                        <Eye size={12} /> {t("leftIris")}
                       </p>
                       <p className="text-xs font-mono text-slate-700 truncate">
                         {biometrics.leftIris}
@@ -259,7 +258,7 @@ export function BiometricStep({
                     </div>
                     <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
                       <p className="text-xs text-slate-500 mb-1 flex items-center gap-1">
-                        <Eye size={12} /> Right Iris
+                        <Eye size={12} /> {t("rightIris")}
                       </p>
                       <p className="text-xs font-mono text-slate-700 truncate">
                         {biometrics.rightIris}
@@ -271,19 +270,19 @@ export function BiometricStep({
                 {/* Status badges */}
                 <div className="flex flex-wrap gap-2">
                   {biometrics.isCaptured && (
-                    <Badge className="bg-blue-100 text-blue-700">Captured</Badge>
+                    <Badge className="bg-blue-100 text-blue-700">{t("captured")}</Badge>
                   )}
                   {isVerified && (
-                    <Badge className="bg-emerald-100 text-emerald-700">Verified</Badge>
+                    <Badge className="bg-emerald-100 text-emerald-700">{t("verified")}</Badge>
                   )}
                   {!isVerified && biometrics.isCaptured && (
-                    <Badge className="bg-amber-100 text-amber-700">Pending Verification</Badge>
+                    <Badge className="bg-amber-100 text-amber-700">{t("pendingVerification")}</Badge>
                   )}
                   {dedupResult === "pass" && (
-                    <Badge className="bg-emerald-100 text-emerald-700">Unique</Badge>
+                    <Badge className="bg-emerald-100 text-emerald-700">{t("unique")}</Badge>
                   )}
                   {dedupResult === "fail" && (
-                    <Badge className="bg-red-100 text-red-700">Duplicate Detected</Badge>
+                    <Badge className="bg-red-100 text-red-700">{t("duplicateDetected")}</Badge>
                   )}
                 </div>
 
@@ -293,12 +292,12 @@ export function BiometricStep({
                     <div className="flex items-center justify-between mb-2">
                       <h5 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
                         <Camera size={14} className="text-blue-600" />
-                        Liveness Detection
+                        {t("livenessDetection")}
                       </h5>
                       {biometrics.livenessCheck ? (
-                        <Badge className="bg-emerald-100 text-emerald-700">Passed</Badge>
+                        <Badge className="bg-emerald-100 text-emerald-700">{t("passed")}</Badge>
                       ) : (
-                        <Badge className="bg-red-100 text-red-700">Failed</Badge>
+                        <Badge className="bg-red-100 text-red-700">{t("failed")}</Badge>
                       )}
                     </div>
                     <div className="flex items-center gap-3">
@@ -318,17 +317,17 @@ export function BiometricStep({
                 <div className="p-3 bg-blue-50 rounded-xl border border-blue-200 flex items-center gap-3">
                   <Shield size={16} className="text-blue-600" />
                   <div>
-                    <p className="text-xs font-medium text-blue-900">Data Encrypted</p>
-                    <p className="text-[10px] text-blue-600">AES-256 encryption applied to all biometric data</p>
+                    <p className="text-xs font-medium text-blue-900">{t("dataEncrypted")}</p>
+                    <p className="text-[10px] text-blue-600">{t("aes256")}</p>
                   </div>
                 </div>
               </>
             ) : (
               <div className="text-center py-12">
                 <Fingerprint size={40} className="mx-auto text-slate-300 mb-3" />
-                <p className="text-slate-500 font-medium">No biometric data captured</p>
+                <p className="text-slate-500 font-medium">{t("noBiometricData")}</p>
                 <p className="text-sm text-slate-400 mt-1">
-                  Use the capture buttons to begin enrollment
+                  {t("useCaptureButtons")}
                 </p>
               </div>
             )}

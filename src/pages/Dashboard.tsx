@@ -10,14 +10,11 @@ import {
   XCircle,
   ArrowRight,
   TrendingUp,
-  Activity,
-  UserCheck,
-  AlertCircle,
 } from "lucide-react";
 import { Link } from "react-router";
 import {
-  BarChart,
-  Bar,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -26,17 +23,11 @@ import {
   PieChart,
   Pie,
   Cell,
-  AreaChart,
-  Area,
 } from "recharts";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const PIE_COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#06B6D4", "#EC4899"];
-const AREA_GRADIENT = {
-  blue: { start: "#3B82F6", end: "#3B82F600" },
-  green: { start: "#10B981", end: "#10B98100" },
-  amber: { start: "#F59E0B", end: "#F59E0B00" },
-};
 
 function AnimatedCounter({ value, duration = 1000 }: { value: number; duration?: number }) {
   const [count, setCount] = useState(0);
@@ -64,8 +55,9 @@ function AnimatedCounter({ value, duration = 1000 }: { value: number; duration?:
 }
 
 export default function Dashboard() {
+  const { t } = useTranslation(["dashboard", "common"]);
   const isSuperAdmin = useAuthStore((s) => s.isSuperAdmin());
-  const { data: superAdminStats, isLoading: statsLoading } = trpc.dashboard.superAdmin.useQuery(
+  const { data: superAdminStats } = trpc.dashboard.superAdmin.useQuery(
     undefined,
     { enabled: isSuperAdmin }
   );
@@ -73,8 +65,9 @@ export default function Dashboard() {
 
   const statusBreakdown = superAdminStats?.statusBreakdown || [];
   const pieData = statusBreakdown.map((s) => ({
-    name: s.status.replace("_", " "),
+    name: t(`common:status.${s.status}` as any),
     value: s.count,
+    rawStatus: s.status,
   }));
 
   const recentApplications = overviewStats?.recentApplications || [];
@@ -98,24 +91,22 @@ export default function Dashboard() {
           <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
         </div>
         <div className="relative z-10">
-          <h2 className="text-2xl font-bold">Welcome back, {isSuperAdmin ? "Admin" : "User"}!</h2>
-          <p className="mt-1 text-blue-100">
-            Here's what's happening with your identity management system today.
-          </p>
+          <h2 className="text-2xl font-bold">{isSuperAdmin ? t("welcomeAdmin") : t("welcomeUser")}</h2>
+          <p className="mt-1 text-blue-100">{t("subtitle")}</p>
           <div className="mt-4 flex flex-wrap gap-3">
             <Link
               to="/applications/new"
               className="inline-flex items-center gap-2 rounded-lg bg-white/20 px-4 py-2 text-sm font-medium backdrop-blur-sm transition-colors hover:bg-white/30"
             >
               <FileText size={16} />
-              New Application
+              {t("newApplication")}
             </Link>
             <Link
               to="/verification"
               className="inline-flex items-center gap-2 rounded-lg bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur-sm transition-colors hover:bg-white/20"
             >
               <CheckCircle size={16} />
-              Pending Verifications
+              {t("pendingVerifications")}
             </Link>
           </div>
         </div>
@@ -124,55 +115,55 @@ export default function Dashboard() {
       {/* Stats Cards */}
       <div data-tour="stats-cards" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          title="Total Authorities"
+          title={t("totalAuthorities")}
           value={superAdminStats?.totalAuthorities || 0}
           icon={Building2}
           color="blue"
           link="/authorities"
-          trend="+2 this month"
+          trend={t("trendMonth")}
         />
         <StatCard
-          title="Total Applications"
+          title={t("totalApplications")}
           value={superAdminStats?.totalApplications || 0}
           icon={FileText}
           color="indigo"
           link="/applications"
-          trend="+12 this week"
+          trend={t("trendWeek")}
         />
         <StatCard
-          title="Cards Issued"
+          title={t("cardsIssued")}
           value={superAdminStats?.totalCards || 0}
           icon={IdCard}
           color="emerald"
           link="/card-issuance"
-          trend="+5 today"
+          trend={t("trendToday")}
         />
         <StatCard
-          title="System Users"
+          title={t("systemUsers")}
           value={superAdminStats?.totalUsers || 0}
           icon={Users}
           color="amber"
           link="/users"
-          trend="Active"
+          trend={t("trendActive")}
         />
       </div>
 
       {/* Secondary Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <SecondaryStatCard
-          title="Pending Verification"
+          title={t("pendingVerification")}
           value={statusBreakdown.find((s) => s.status === "submitted")?.count || 0}
           icon={Clock}
           color="blue"
         />
         <SecondaryStatCard
-          title="Approved"
+          title={t("approved")}
           value={statusBreakdown.find((s) => s.status === "approved")?.count || 0}
           icon={CheckCircle}
           color="emerald"
         />
         <SecondaryStatCard
-          title="Rejected"
+          title={t("rejected")}
           value={statusBreakdown.find((s) => s.status === "rejected")?.count || 0}
           icon={XCircle}
           color="red"
@@ -185,17 +176,17 @@ export default function Dashboard() {
         <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-base font-semibold text-slate-900">Weekly Overview</h3>
-              <p className="text-sm text-slate-500 mt-0.5">Applications & Cards Issued</p>
+              <h3 className="text-base font-semibold text-slate-900">{t("weeklyOverview")}</h3>
+              <p className="text-sm text-slate-500 mt-0.5">{t("weeklySubtitle")}</p>
             </div>
             <div className="flex items-center gap-4 text-xs">
               <div className="flex items-center gap-1.5">
                 <div className="w-3 h-3 rounded-full bg-blue-500" />
-                <span className="text-slate-600">Applications</span>
+                <span className="text-slate-600">{t("chartApplications")}</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                <span className="text-slate-600">Issued</span>
+                <span className="text-slate-600">{t("chartIssued")}</span>
               </div>
             </div>
           </div>
@@ -245,8 +236,8 @@ export default function Dashboard() {
 
         {/* Status Distribution */}
         <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-          <h3 className="text-base font-semibold text-slate-900 mb-2">Status Distribution</h3>
-          <p className="text-sm text-slate-500 mb-4">Application breakdown</p>
+          <h3 className="text-base font-semibold text-slate-900 mb-2">{t("statusDistribution")}</h3>
+          <p className="text-sm text-slate-500 mb-4">{t("statusSubtitle")}</p>
           <div className="h-48">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -279,7 +270,7 @@ export default function Dashboard() {
                     className="w-2.5 h-2.5 rounded-full"
                     style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
                   />
-                  <span className="text-xs text-slate-600 capitalize">{entry.name.replace("_", " ")}</span>
+                  <span className="text-xs text-slate-600 capitalize">{entry.name}</span>
                 </div>
                 <span className="text-xs font-medium text-slate-900">{entry.value}</span>
               </div>
@@ -292,14 +283,14 @@ export default function Dashboard() {
       <div data-tour="recent-apps" className="bg-white rounded-xl border border-slate-200 shadow-sm">
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <div>
-            <h3 className="text-base font-semibold text-slate-900">Recent Applications</h3>
-            <p className="text-sm text-slate-500 mt-0.5">Latest identity applications</p>
+            <h3 className="text-base font-semibold text-slate-900">{t("recentApplications")}</h3>
+            <p className="text-sm text-slate-500 mt-0.5">{t("recentSubtitle")}</p>
           </div>
           <Link
             to="/applications"
             className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1 font-medium"
           >
-            View All
+            {t("viewAll")}
             <ArrowRight size={14} />
           </Link>
         </div>
@@ -307,8 +298,8 @@ export default function Dashboard() {
           {recentApplications.length === 0 ? (
             <div className="p-12 text-center">
               <FileText size={40} className="mx-auto text-slate-300 mb-3" />
-              <p className="text-slate-500 font-medium">No applications yet</p>
-              <p className="text-sm text-slate-400 mt-1">Create your first application to get started</p>
+              <p className="text-slate-500 font-medium">{t("noApplications")}</p>
+              <p className="text-sm text-slate-400 mt-1">{t("noApplicationsSubtitle")}</p>
             </div>
           ) : (
             recentApplications.map((app, index) => (
@@ -359,12 +350,12 @@ function StatCard({
   link: string;
   trend?: string;
 }) {
-  const colorMap: Record<string, { bg: string; icon: string; gradient: string }> = {
-    blue: { bg: "bg-blue-50", icon: "text-blue-600", gradient: "from-blue-500 to-blue-600" },
-    indigo: { bg: "bg-indigo-50", icon: "text-indigo-600", gradient: "from-indigo-500 to-indigo-600" },
-    emerald: { bg: "bg-emerald-50", icon: "text-emerald-600", gradient: "from-emerald-500 to-emerald-600" },
-    amber: { bg: "bg-amber-50", icon: "text-amber-600", gradient: "from-amber-500 to-amber-600" },
-    red: { bg: "bg-red-50", icon: "text-red-600", gradient: "from-red-500 to-red-600" },
+  const colorMap: Record<string, { gradient: string }> = {
+    blue: { gradient: "from-blue-500 to-blue-600" },
+    indigo: { gradient: "from-indigo-500 to-indigo-600" },
+    emerald: { gradient: "from-emerald-500 to-emerald-600" },
+    amber: { gradient: "from-amber-500 to-amber-600" },
+    red: { gradient: "from-red-500 to-red-600" },
   };
 
   const colors = colorMap[color] || colorMap.blue;
@@ -430,6 +421,7 @@ function SecondaryStatCard({
 }
 
 function StatusBadge({ status }: { status: string }) {
+  const { t } = useTranslation("common");
   const statusStyles: Record<string, { bg: string; text: string; dot: string }> = {
     draft: { bg: "bg-slate-100", text: "text-slate-600", dot: "bg-slate-400" },
     submitted: { bg: "bg-blue-50", text: "text-blue-700", dot: "bg-blue-500" },
@@ -447,7 +439,7 @@ function StatusBadge({ status }: { status: string }) {
       className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${styles.bg} ${styles.text}`}
     >
       <span className={`w-1.5 h-1.5 rounded-full ${styles.dot}`} />
-      {status.replace("_", " ")}
+      {t(`status.${status}` as any)}
     </span>
   );
 }

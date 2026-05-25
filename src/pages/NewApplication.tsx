@@ -18,6 +18,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 import { PersonalInfoStep, validatePersonalInfo } from "./steps/PersonalInfoStep";
 import { ContactDetailsStep, validateContactDetails } from "./steps/ContactDetailsStep";
@@ -25,15 +26,6 @@ import { DocumentUploadStep } from "./steps/DocumentUploadStep";
 import { BiometricStep } from "./steps/BiometricStep";
 import { PaymentStep } from "./steps/PaymentStep";
 import { ReviewStep } from "./steps/ReviewStep";
-
-const STEPS: Step[] = [
-  { number: 1, label: "Personal Info", icon: UserPlus },
-  { number: 2, label: "Contact", icon: Contact },
-  { number: 3, label: "Documents", icon: Upload },
-  { number: 4, label: "Biometrics", icon: Fingerprint },
-  { number: 5, label: "Payment", icon: CreditCard },
-  { number: 6, label: "Review", icon: FileCheck },
-];
 
 export interface DocumentEntry {
   id?: number;
@@ -149,12 +141,22 @@ function formReducer(state: FormState, action: Action): FormState {
 }
 
 export default function NewApplication() {
+  const { t } = useTranslation("newApplication");
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams<{ id: string }>();
   const isEditMode = !!id && location.pathname.includes("/edit");
   const platformUser = useAuthStore((s) => s.platformUser);
   const utils = trpc.useUtils();
+
+  const steps: Step[] = [
+    { number: 1, label: t("stepPersonalInfo"), icon: UserPlus },
+    { number: 2, label: t("stepContact"), icon: Contact },
+    { number: 3, label: t("stepDocuments"), icon: Upload },
+    { number: 4, label: t("stepBiometrics"), icon: Fingerprint },
+    { number: 5, label: t("stepPayment"), icon: CreditCard },
+    { number: 6, label: t("stepReview"), icon: FileCheck },
+  ];
 
   const [step, setStep] = useState(1);
   const [formData, dispatch] = useReducer(formReducer, INITIAL_FORM_STATE);
@@ -279,53 +281,53 @@ export default function NewApplication() {
   const createMutation = trpc.enrollment.create.useMutation({
     onSuccess: (data) => {
       setSavedApplicationId(data.id);
-      toast.success("Application saved as draft");
+      toast.success(t("saveDraftSuccess"));
     },
     onError: (err) => {
-      toast.error(err.message || "Failed to save application");
+      toast.error(err.message || t("saveDraftError"));
       setIsSubmitting(false);
     },
   });
 
   const updateMutation = trpc.enrollment.update.useMutation({
     onSuccess: () => {
-      toast.success("Application updated");
+      toast.success(t("updateSuccess"));
     },
     onError: (err) => {
-      toast.error(err.message || "Failed to update application");
+      toast.error(err.message || t("updateError"));
       setIsSubmitting(false);
     },
   });
 
   const submitMutation = trpc.enrollment.submit.useMutation({
     onSuccess: () => {
-      toast.success("Application submitted successfully!");
+      toast.success(t("submitSuccess"));
       utils.enrollment.list.invalidate();
       navigate("/applications");
     },
     onError: (err) => {
-      toast.error(err.message || "Failed to submit application");
+      toast.error(err.message || t("submitError"));
       setIsSubmitting(false);
     },
   });
 
   const biometricCaptureMutation = trpc.biometric.capture.useMutation({
     onSuccess: () => {
-      toast.success("Biometric data submitted");
+      toast.success(t("biometricSubmitSuccess"));
       dispatch({ type: "SET_BIOMETRICS", data: { isCaptured: true } });
     },
     onError: (err) => {
-      toast.error(err.message || "Failed to submit biometric data");
+      toast.error(err.message || t("biometricSubmitError"));
     },
   });
 
   const biometricVerifyMutation = trpc.biometric.verify.useMutation({
     onSuccess: () => {
-      toast.success("Biometrics verified");
+      toast.success(t("biometricVerifySuccess"));
       dispatch({ type: "SET_BIOMETRICS", data: { isVerified: true } });
     },
     onError: (err) => {
-      toast.error(err.message || "Failed to verify biometrics");
+      toast.error(err.message || t("biometricVerifyError"));
     },
   });
 
@@ -336,17 +338,17 @@ export default function NewApplication() {
         data: { dedupResult: data.isDuplicate ? "fail" : "pass" },
       });
       toast[data.isDuplicate ? "warning" : "success"](
-        data.isDuplicate ? "Duplicate biometric data detected!" : "No duplicates found - biometric data is unique"
+        data.isDuplicate ? t("duplicateDetected") : t("noDuplicates")
       );
     },
     onError: (err) => {
-      toast.error(err.message || "Failed to run deduplication check");
+      toast.error(err.message || t("dedupError"));
     },
   });
 
   const paymentCreateMutation = trpc.payment.create.useMutation({
     onSuccess: (data) => {
-      toast.success(`Payment recorded: ${data.invoiceNumber}`);
+      toast.success(t("paymentRecorded", { invoiceNumber: data.invoiceNumber }));
       utils.payment.getByApplicationId.invalidate({ applicationId: savedApplicationId! });
       dispatch({
         type: "SET_PAYMENT",
@@ -354,7 +356,7 @@ export default function NewApplication() {
       });
     },
     onError: (err) => {
-      toast.error(err.message || "Failed to create payment");
+      toast.error(err.message || t("paymentError"));
     },
   });
 
@@ -419,12 +421,12 @@ export default function NewApplication() {
 
   const handleSaveDraft = async () => {
     if (!platformUser) {
-      toast.error("Please login first");
+      toast.error(t("loginFirst"));
       return;
     }
 
     if (!validatePersonalInfo(formData) || !validateContactDetails(formData)) {
-      toast.error("Please complete all required fields (steps 1 & 2) before saving");
+      toast.error(t("completeSteps1And2"));
       return;
     }
 
@@ -463,12 +465,12 @@ export default function NewApplication() {
 
   const handleSubmit = async () => {
     if (!platformUser) {
-      toast.error("Please login first");
+      toast.error(t("loginFirst"));
       return;
     }
 
     if (!isStepValid(6)) {
-      toast.error("Please complete all required fields before submitting");
+      toast.error(t("completeAllFields"));
       return;
     }
 
@@ -551,7 +553,7 @@ export default function NewApplication() {
       // Submit
       await submitMutation.mutateAsync({ id: appId });
     } catch (err: any) {
-      toast.error(err.message || "Failed to submit application");
+      toast.error(err.message || t("submitError"));
     } finally {
       setIsSubmitting(false);
     }
@@ -616,12 +618,12 @@ export default function NewApplication() {
         onClick={() => navigate("/applications")}
       >
         <ArrowLeft size={16} className="mr-1" />
-        Back to Applications
+        {t("backToApplications")}
       </Button>
 
       <div className="mb-8">
         <Stepper
-          steps={STEPS}
+          steps={steps}
           currentStep={step}
           completedSteps={completedSteps}
           onStepClick={handleStepClick}
@@ -673,7 +675,7 @@ export default function NewApplication() {
           {step > 1 && (
             <Button variant="outline" onClick={handlePrev}>
               <ArrowLeft size={16} className="mr-1" />
-              Previous
+              {t("previous")}
             </Button>
           )}
         </div>
@@ -688,7 +690,7 @@ export default function NewApplication() {
             ) : (
               <Save size={16} className="mr-1" />
             )}
-            Save Draft
+            {t("saveDraft")}
           </Button>
 
           {step < 6 ? (
@@ -697,7 +699,7 @@ export default function NewApplication() {
               disabled={!isStepValid(step)}
               className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-lg shadow-blue-500/20"
             >
-              Next Step
+              {t("nextStep")}
               <ArrowRight size={16} className="ml-1" />
             </Button>
           ) : (
@@ -711,7 +713,7 @@ export default function NewApplication() {
               ) : (
                 <Send size={16} className="mr-1" />
               )}
-              {isSubmitting ? "Submitting..." : "Submit Application"}
+              {isSubmitting ? t("submitting") : t("submitApplication")}
             </Button>
           )}
         </div>

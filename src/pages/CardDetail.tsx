@@ -21,6 +21,7 @@ import {
   RotateCw,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import QRCode from "qrcode";
 import JsBarcode from "jsbarcode";
 
@@ -90,7 +91,6 @@ function OnipSeal({ className }: { className?: string }) {
         </textPath>
       </text>
       <circle cx="80" cy="82" r="28" fill="#FFF" stroke="#1E3A5F" strokeWidth="1" />
-      {/* Simplified emblem - leopard head with spear */}
       <g transform="translate(55, 58) scale(0.5)">
         <circle cx="50" cy="40" r="30" fill="#F59E0B" />
         <circle cx="40" cy="35" r="5" fill="#000" />
@@ -124,7 +124,6 @@ function GovernmentSeal({ className }: { className?: string }) {
         </textPath>
       </text>
       <circle cx="70" cy="72" r="26" fill="#FFF" stroke="#1E3A5F" strokeWidth="0.5" />
-      {/* Simplified leopard */}
       <g transform="translate(48, 52) scale(0.42)">
         <circle cx="50" cy="40" r="32" fill="#F59E0B" />
         <circle cx="38" cy="34" r="6" fill="#000" />
@@ -172,6 +171,7 @@ export default function CardDetail() {
   const barcodeRef = useRef<SVGSVGElement>(null);
   const [qrDataUrl, setQrDataUrl] = useState("");
   const [showBack, setShowBack] = useState(false);
+  const { t } = useTranslation(["cardDetail", "common"]);
 
   const { data: application, isLoading } = trpc.enrollment.getById.useQuery({
     id: Number(id),
@@ -219,7 +219,7 @@ export default function CardDetail() {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-slate-500">Loading card details...</p>
+          <p className="text-slate-500">{t("cardDetail:loading")}</p>
         </div>
       </div>
     );
@@ -229,11 +229,11 @@ export default function CardDetail() {
     return (
       <div className="text-center py-12">
         <XCircle size={48} className="mx-auto text-slate-300 mb-4" />
-        <p className="text-slate-500 font-medium">Card not found</p>
+        <p className="text-slate-500 font-medium">{t("cardDetail:notFound")}</p>
         <Link to="/card-issuance">
           <Button variant="outline" className="mt-4">
             <ArrowLeft size={16} className="mr-1" />
-            Back to Cards
+            {t("cardDetail:backToCards")}
           </Button>
         </Link>
       </div>
@@ -243,8 +243,8 @@ export default function CardDetail() {
   const displayName = `${application.firstName} ${application.middleName ? application.middleName + " " : ""}${application.lastName}`;
   const identityNum = card.identityNumber || "RDC-00000000";
   const cardNumber = identityNum.startsWith("RDC-") ? identityNum : `RDC-${identityNum}`;
-  const issueDate = card.issuedAt ? new Date(card.issuedAt).toLocaleDateString("fr-FR") : "N/A";
-  const expiryDate = card.expiresAt ? new Date(card.expiresAt).toLocaleDateString("fr-FR") : "N/A";
+  const issueDate = card.issuedAt ? new Date(card.issuedAt).toLocaleDateString("fr-FR") : t("common:nA");
+  const expiryDate = card.expiresAt ? new Date(card.expiresAt).toLocaleDateString("fr-FR") : t("common:nA");
   const dob = application.dateOfBirth ? new Date(application.dateOfBirth).toLocaleDateString("fr-FR") : application.dateOfBirth;
 
   const mrzLine1 = `IDC<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`;
@@ -260,7 +260,7 @@ export default function CardDetail() {
           onClick={() => navigate("/card-issuance")}
         >
           <ArrowLeft size={16} className="mr-1" />
-          Back to Cards
+          {t("cardDetail:backToCards")}
         </Button>
         <div className="flex items-center gap-3">
           <Button
@@ -270,7 +270,7 @@ export default function CardDetail() {
             className="gap-2"
           >
             <RotateCw size={14} />
-            {showBack ? "Show Front" : "Show Back"}
+            {showBack ? t("cardDetail:showFront") : t("cardDetail:showBack")}
           </Button>
           <span
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${
@@ -284,7 +284,7 @@ export default function CardDetail() {
             ) : (
               <XCircle size={12} />
             )}
-            {card.isActive ? "Active" : "Inactive"}
+            {card.isActive ? t("common:active") : t("common:inactive")}
           </span>
         </div>
       </div>
@@ -296,7 +296,6 @@ export default function CardDetail() {
             <CardContent className="p-0">
               {/* DRC Card Design */}
               <div className="relative bg-gradient-to-br from-slate-100 via-slate-50 to-white text-slate-900 overflow-hidden">
-                {/* Subtle background pattern */}
                 <div className="absolute inset-0 opacity-[0.03]" style={{
                   backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(0,0,0,0.05) 20px, rgba(0,0,0,0.05) 21px)`,
                 }} />
@@ -377,12 +376,12 @@ export default function CardDetail() {
                         <FieldRow label="NOM" value={application.lastName} />
                         <FieldRow label="AUTRE NOM" value={application.middleName || "-"} />
                         <FieldRow label="ADRESSE" value={application.address} />
-                        <FieldRow label="GROUPE SANGUIN" value={application.bloodGroup || "N/A"} />
+                        <FieldRow label="GROUPE SANGUIN" value={application.bloodGroup || t("common:nA")} />
                         <FieldRow label="NATIONALITE" value={application.nationality} />
                         <FieldRow label="DATE DE DELIVRANCE" value={issueDate} />
                         <FieldRow label="DATE D'EXPIRATION" value={expiryDate} />
                         <FieldRow label="DATE DE NAISSANCE" value={dob} />
-                        <FieldRow label="ETAT CIVIL" value={application.maritalStatus || "N/A"} />
+                        <FieldRow label="ETAT CIVIL" value={application.maritalStatus || t("common:nA")} />
                       </div>
 
                       {/* Government Seal */}
@@ -426,9 +425,9 @@ export default function CardDetail() {
                     <div className="flex gap-4 items-start">
                       {/* Left info */}
                       <div className="flex-1 space-y-1 text-[10px]">
-                        <BackFieldRow label="Niveau d'etudes" value={application.educationLevel || "N/A"} />
-                        <BackFieldRow label="Profession" value={application.profession || "N/A"} />
-                        <BackFieldRow label="Adresse professionnelle" value={application.professionalAddress || "N/A"} />
+                        <BackFieldRow label="Niveau d'etudes" value={application.educationLevel || t("common:nA")} />
+                        <BackFieldRow label="Profession" value={application.profession || t("common:nA")} />
+                        <BackFieldRow label="Adresse professionnelle" value={application.professionalAddress || t("common:nA")} />
                       </div>
 
                       {/* Center seal */}
@@ -493,11 +492,11 @@ export default function CardDetail() {
                 <div className="flex items-center justify-between text-xs text-slate-500">
                   <span className="flex items-center gap-1.5">
                     <Calendar size={12} />
-                    Expires: {card.expiresAt ? new Date(card.expiresAt).toLocaleDateString() : "N/A"}
+                    {t("cardDetail:expires")} {card.expiresAt ? new Date(card.expiresAt).toLocaleDateString() : t("common:nA")}
                   </span>
                   <span className="flex items-center gap-1.5">
                     <ShieldCheck size={12} />
-                    {showBack ? "Secure Identity Card - Back" : "Secure Identity Card - Front"}
+                    {showBack ? t("cardDetail:secureBack") : t("cardDetail:secureFront")}
                   </span>
                 </div>
               </div>
@@ -511,36 +510,36 @@ export default function CardDetail() {
             <CardHeader className="pb-4">
               <CardTitle className="text-base flex items-center gap-2">
                 <CreditCard size={18} className="text-blue-600" />
-                Card Information
+                {t("cardDetail:cardInfo")}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <InfoRow icon={CreditCard} label="Identity Number" value={card.identityNumber} highlighted />
-              <InfoRow icon={User} label="First Name" value={application.firstName} />
-              <InfoRow icon={User} label="Middle Name" value={application.middleName || "N/A"} />
-              <InfoRow icon={User} label="Last Name" value={application.lastName} />
-              <InfoRow icon={Calendar} label="Date of Birth" value={application.dateOfBirth} />
-              <InfoRow icon={User} label="Sex" value={application.gender} />
-              <InfoRow icon={Globe} label="Nationality" value={application.nationality} />
-              <InfoRow icon={Droplets} label="Blood Group" value={application.bloodGroup || "N/A"} />
-              <InfoRow icon={Phone} label="Mobile" value={application.mobileNumber} />
-              <InfoRow icon={Mail} label="Email" value={application.email || "N/A"} />
-              <InfoRow icon={MapPin} label="Address" value={application.address} />
+              <InfoRow icon={CreditCard} label={t("cardDetail:identityNumber")} value={card.identityNumber} highlighted />
+              <InfoRow icon={User} label={t("cardDetail:firstName")} value={application.firstName} />
+              <InfoRow icon={User} label={t("cardDetail:middleName")} value={application.middleName || t("common:nA")} />
+              <InfoRow icon={User} label={t("cardDetail:lastName")} value={application.lastName} />
+              <InfoRow icon={Calendar} label={t("cardDetail:dateOfBirth")} value={application.dateOfBirth} />
+              <InfoRow icon={User} label={t("cardDetail:sex")} value={application.gender} />
+              <InfoRow icon={Globe} label={t("cardDetail:nationality")} value={application.nationality} />
+              <InfoRow icon={Droplets} label={t("cardDetail:bloodGroup")} value={application.bloodGroup || t("common:nA")} />
+              <InfoRow icon={Phone} label={t("cardDetail:mobile")} value={application.mobileNumber} />
+              <InfoRow icon={Mail} label={t("cardDetail:email")} value={application.email || t("common:nA")} />
+              <InfoRow icon={MapPin} label={t("cardDetail:address")} value={application.address} />
               <div className="border-t border-slate-100 pt-4 mt-4 space-y-3">
                 <InfoRow
                   icon={Calendar}
-                  label="Issued Date"
-                  value={card.issuedAt ? new Date(card.issuedAt).toLocaleDateString() : "N/A"}
+                  label={t("cardDetail:issuedDate")}
+                  value={card.issuedAt ? new Date(card.issuedAt).toLocaleDateString() : t("common:nA")}
                 />
                 <InfoRow
                   icon={Calendar}
-                  label="Expiry Date"
-                  value={card.expiresAt ? new Date(card.expiresAt).toLocaleDateString() : "N/A"}
+                  label={t("cardDetail:expiryDate")}
+                  value={card.expiresAt ? new Date(card.expiresAt).toLocaleDateString() : t("common:nA")}
                 />
                 <InfoRow
                   icon={CheckCircle2}
-                  label="Status"
-                  value={card.isActive ? "Active" : "Inactive"}
+                  label={t("cardDetail:status")}
+                  value={card.isActive ? t("common:active") : t("common:inactive")}
                 />
               </div>
             </CardContent>
@@ -550,11 +549,11 @@ export default function CardDetail() {
           <div className="grid grid-cols-2 gap-3">
             <Button variant="outline" className="w-full h-11">
               <Printer size={16} className="mr-2" />
-              Print Card
+              {t("cardDetail:printCard")}
             </Button>
             <Button variant="outline" className="w-full h-11">
               <Download size={16} className="mr-2" />
-              Download PDF
+              {t("cardDetail:downloadPdf")}
             </Button>
           </div>
 
@@ -562,7 +561,7 @@ export default function CardDetail() {
             <a href={qrDataUrl} download={`qr-${card.identityNumber}.png`} className="block">
               <Button variant="outline" className="w-full h-11">
                 <Share2 size={16} className="mr-2" />
-                Download QR Code
+                {t("cardDetail:downloadQr")}
               </Button>
             </a>
           )}

@@ -19,6 +19,7 @@ import {
   Fingerprint,
   Clock,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function VerifyCard() {
   const { identityNumber: urlIdentityNumber } = useParams<{
@@ -27,6 +28,7 @@ export default function VerifyCard() {
   const [inputNumber, setInputNumber] = useState(urlIdentityNumber || "");
   const [searched, setSearched] = useState(!!urlIdentityNumber);
   const [isVerifying, setIsVerifying] = useState(false);
+  const { t } = useTranslation(["verifyCard", "common"]);
 
   const { data: verificationResult, isLoading } =
     trpc.card.getByIdentityNumber.useQuery(
@@ -63,9 +65,9 @@ export default function VerifyCard() {
             <ShieldCheck size={18} className="text-white" />
           </div>
           <div>
-            <h1 className="text-sm font-bold text-slate-900">Earth Card</h1>
+            <h1 className="text-sm font-bold text-slate-900">{t("verifyCard:earthCard")}</h1>
             <p className="text-[10px] text-slate-500">
-              Identity Verification Portal
+              {t("verifyCard:identityVerificationPortal")}
             </p>
           </div>
         </div>
@@ -76,15 +78,15 @@ export default function VerifyCard() {
         <div className="text-center space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-100">
             <QrCode size={14} className="text-blue-600" />
-            <span className="text-sm text-blue-700 font-medium">Official Verification System</span>
+            <span className="text-sm text-blue-700 font-medium">{t("verifyCard:officialVerificationSystem")}</span>
           </div>
-          
+
           <div className="space-y-2">
             <h2 className="text-3xl font-bold text-slate-900">
-              Verify Identity Card
+              {t("verifyCard:verifyIdentityCard")}
             </h2>
             <p className="text-slate-500 max-w-md mx-auto">
-              Enter the identity card number to instantly verify its authenticity and status
+              {t("verifyCard:enterCardNumberDesc")}
             </p>
           </div>
 
@@ -95,7 +97,7 @@ export default function VerifyCard() {
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
               />
               <Input
-                placeholder="EC-2026-8A3F21"
+                placeholder={t("verifyCard:placeholder")}
                 value={inputNumber}
                 onChange={(e) => {
                   setInputNumber(e.target.value.toUpperCase());
@@ -110,7 +112,7 @@ export default function VerifyCard() {
               className="h-12 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-lg shadow-blue-500/20"
             >
               <Search size={18} className="mr-2" />
-              Verify
+              {t("verifyCard:verify")}
             </Button>
           </div>
 
@@ -118,15 +120,15 @@ export default function VerifyCard() {
           <div className="flex items-center justify-center gap-6 text-xs text-slate-400">
             <span className="flex items-center gap-1.5">
               <Fingerprint size={12} />
-              Secure verification
+              {t("verifyCard:secureVerification")}
             </span>
             <span className="flex items-center gap-1.5">
               <Clock size={12} />
-              Instant results
+              {t("verifyCard:instantResults")}
             </span>
             <span className="flex items-center gap-1.5">
               <ShieldCheck size={12} />
-              Official database
+              {t("verifyCard:officialDatabase")}
             </span>
           </div>
         </div>
@@ -142,10 +144,10 @@ export default function VerifyCard() {
                     <div className="absolute inset-0 border-4 border-blue-600 rounded-full border-t-transparent animate-spin" />
                   </div>
                   <h3 className="text-lg font-semibold text-slate-900 mb-2">
-                    Verifying Identity
+                    {t("verifyCard:verifyingIdentity")}
                   </h3>
                   <p className="text-sm text-slate-500">
-                    Please wait while we verify the card number...
+                    {t("verifyCard:pleaseWaitVerify")}
                   </p>
                 </CardContent>
               </Card>
@@ -156,10 +158,10 @@ export default function VerifyCard() {
                     <XCircle size={32} className="text-red-500" />
                   </div>
                   <h3 className="text-xl font-semibold text-red-700 mb-2">
-                    Card Not Found
+                    {t("verifyCard:cardNotFound")}
                   </h3>
                   <p className="text-sm text-slate-500 max-w-sm mx-auto">
-                    The identity number <span className="font-mono font-medium text-slate-700">{inputNumber}</span> could not be found in our system. Please check the number and try again.
+                    {t("verifyCard:cardNotFoundDesc", { number: inputNumber })}
                   </p>
                 </CardContent>
               </Card>
@@ -183,12 +185,12 @@ export default function VerifyCard() {
                         </div>
                         <div>
                           <h3 className="text-xl font-bold">
-                            {isValid ? "Identity Verified" : "Invalid / Revoked"}
+                            {isValid ? t("verifyCard:identityVerified") : t("verifyCard:invalidRevoked")}
                           </h3>
                           <p className="text-sm opacity-90">
                             {isValid
-                              ? "This identity card is valid and active"
-                              : "This identity card is invalid or has been revoked"}
+                              ? t("verifyCard:validActive")
+                              : t("verifyCard:invalidOrRevoked")}
                           </p>
                         </div>
                       </div>
@@ -204,14 +206,14 @@ export default function VerifyCard() {
                   <CardHeader className="pb-4">
                     <CardTitle className="text-base flex items-center gap-2">
                       <User size={18} className="text-blue-600" />
-                      Identity Details
+                      {t("verifyCard:identityDetails")}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     {/* Identity Number */}
                     <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
                       <p className="text-xs text-blue-600 font-medium mb-1 uppercase tracking-wider">
-                        Identity Number
+                        {t("verifyCard:identityNumber")}
                       </p>
                       <p className="text-xl font-mono font-bold text-blue-800 tracking-wider">
                         {verificationResult.card.identityNumber}
@@ -223,22 +225,22 @@ export default function VerifyCard() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <InfoItem
                           icon={User}
-                          label="Name"
+                          label={t("verifyCard:name")}
                           value={`${verificationResult.application.firstName || ""} ${verificationResult.application.lastName || ""}`}
                         />
                         <InfoItem
                           icon={Calendar}
-                          label="Date of Birth"
+                          label={t("verifyCard:dateOfBirth")}
                           value={verificationResult.application.dateOfBirth}
                         />
                         <InfoItem
                           icon={Globe}
-                          label="Nationality"
+                          label={t("verifyCard:nationality")}
                           value={verificationResult.application.nationality}
                         />
                         <InfoItem
                           icon={CreditCard}
-                          label="Sex"
+                          label={t("verifyCard:sex")}
                           value={verificationResult.application.gender}
                         />
                       </div>
@@ -248,7 +250,7 @@ export default function VerifyCard() {
                     {verificationResult.application?.authorityName && (
                       <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
                         <p className="text-xs text-slate-500 font-medium mb-1 uppercase tracking-wider">
-                          Issuing Authority
+                          {t("verifyCard:issuingAuthority")}
                         </p>
                         <p className="text-sm font-semibold text-slate-800">
                           {verificationResult.application.authorityName}
@@ -260,15 +262,15 @@ export default function VerifyCard() {
                     <div className="flex items-center justify-between text-sm text-slate-500 border-t border-slate-100 pt-4">
                       <span className="flex items-center gap-2">
                         <Calendar size={14} />
-                        Issued: {verificationResult.card.issuedAt
+                        {t("verifyCard:issued")}: {verificationResult.card.issuedAt
                           ? new Date(verificationResult.card.issuedAt).toLocaleDateString()
-                          : "N/A"}
+                          : t("common:nA")}
                       </span>
                       <span className="flex items-center gap-2">
                         <Clock size={14} />
-                        Expires: {verificationResult.card.expiresAt
+                        {t("verifyCard:expires")}: {verificationResult.card.expiresAt
                           ? new Date(verificationResult.card.expiresAt).toLocaleDateString()
-                          : "N/A"}
+                          : t("common:nA")}
                       </span>
                     </div>
                   </CardContent>
@@ -276,7 +278,7 @@ export default function VerifyCard() {
 
                 {/* Verification timestamp */}
                 <p className="text-center text-xs text-slate-400">
-                  Verified on {new Date().toLocaleString()} • Earth Card Identity Management System
+                  {t("verifyCard:verifiedOn", { date: new Date().toLocaleString() })}
                 </p>
               </div>
             )}
@@ -285,9 +287,9 @@ export default function VerifyCard() {
 
         {/* Footer */}
         <div className="text-center text-xs text-slate-400 pt-8 border-t border-slate-200">
-          <p className="font-medium text-slate-500">Earth Card Identity Management System</p>
+          <p className="font-medium text-slate-500">{t("verifyCard:footerTitle")}</p>
           <p className="mt-1">
-            This is an official verification portal. For assistance, contact your issuing authority.
+            {t("verifyCard:footerAssistance")}
           </p>
         </div>
       </div>

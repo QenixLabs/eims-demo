@@ -32,6 +32,7 @@ import {
   Eye,
   Lock,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const CATEGORY_ICONS: Record<string, React.ElementType> = {
   authentication: Lock,
@@ -60,6 +61,7 @@ export default function AuditDashboard() {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [severityFilter, setSeverityFilter] = useState("all");
   const [successFilter, setSuccessFilter] = useState("all");
+  const { t } = useTranslation(["audit", "common"]);
 
   const { data: auditLogs, isLoading, refetch } = trpc.audit.list.useQuery({
     limit: 50,
@@ -92,19 +94,43 @@ export default function AuditDashboard() {
   };
 
   const categories = [
-    { value: "all", label: "All Categories" },
-    { value: "authentication", label: "Authentication" },
-    { value: "authority_management", label: "Authority Management" },
-    { value: "user_management", label: "User Management" },
-    { value: "enrollment", label: "Enrollment" },
-    { value: "document", label: "Documents" },
-    { value: "verification", label: "Verification" },
-    { value: "biometric", label: "Biometric" },
-    { value: "card_issuance", label: "Card Issuance" },
-    { value: "payment", label: "Payment" },
-    { value: "system", label: "System" },
-    { value: "api_access", label: "API Access" },
+    { value: "all", label: t("audit:allCategories") },
+    { value: "authentication", label: t("audit:authentication") },
+    { value: "authority_management", label: t("audit:authorityManagement") },
+    { value: "user_management", label: t("audit:userManagement") },
+    { value: "enrollment", label: t("audit:enrollment") },
+    { value: "document", label: t("audit:documents") },
+    { value: "verification", label: t("audit:verification") },
+    { value: "biometric", label: t("audit:biometric") },
+    { value: "card_issuance", label: t("audit:cardIssuance") },
+    { value: "payment", label: t("audit:payment") },
+    { value: "system", label: t("audit:system") },
+    { value: "api_access", label: t("audit:apiAccess") },
   ];
+
+  const severityOptions = [
+    { value: "all", label: t("audit:allSeverity") },
+    { value: "info", label: t("audit:info") },
+    { value: "warning", label: t("audit:warning") },
+    { value: "error", label: t("audit:error") },
+    { value: "critical", label: t("audit:critical") },
+  ];
+
+  const statusOptions = [
+    { value: "all", label: t("audit:allStatus") },
+    { value: "success", label: t("audit:success") },
+    { value: "failed", label: t("audit:failed") },
+  ];
+
+  const getCategoryLabel = (value: string) => {
+    const cat = categories.find((c) => c.value === value);
+    return cat?.label || value;
+  };
+
+  const getSeverityLabel = (value: string) => {
+    const sev = severityOptions.find((s) => s.value === value);
+    return sev?.label || value;
+  };
 
   return (
     <div className="space-y-5 animate-in fade-in duration-300">
@@ -124,18 +150,18 @@ export default function AuditDashboard() {
               </div>
               <div>
                 <p className={`font-semibold ${integrityCheck.isValid ? "text-emerald-900" : "text-red-900"}`}>
-                  Audit Log Integrity: {integrityCheck.isValid ? "Verified" : "Compromised"}
+                  {integrityCheck.isValid ? t("audit:integrityVerified") : t("audit:integrityCompromised")}
                 </p>
                 <p className={`text-xs ${integrityCheck.isValid ? "text-emerald-700" : "text-red-700"}`}>
                   {integrityCheck.isValid
-                    ? `All ${integrityCheck.totalLogs} audit logs verified with hash chain integrity`
-                    : `Hash chain broken at log ID ${integrityCheck.brokenChainAt}`}
+                    ? t("audit:integrityDetail", { count: integrityCheck.totalLogs })
+                    : t("audit:integrityBroken", { id: integrityCheck.brokenChainAt })}
                 </p>
               </div>
             </div>
             <Button variant="outline" size="sm" onClick={() => refetch()}>
               <RefreshCw size={14} className="mr-1" />
-              Re-verify
+              {t("audit:reverify")}
             </Button>
           </CardContent>
         </Card>
@@ -151,7 +177,7 @@ export default function AuditDashboard() {
               </div>
               <div>
                 <p className="text-xl font-bold text-slate-900">{auditStats.total}</p>
-                <p className="text-xs text-slate-500">Total Logs</p>
+                <p className="text-xs text-slate-500">{t("audit:totalLogs")}</p>
               </div>
             </CardContent>
           </Card>
@@ -162,7 +188,7 @@ export default function AuditDashboard() {
               </div>
               <div>
                 <p className="text-xl font-bold text-slate-900">{auditStats.total - auditStats.failedActions}</p>
-                <p className="text-xs text-slate-500">Successful</p>
+                <p className="text-xs text-slate-500">{t("audit:successful")}</p>
               </div>
             </CardContent>
           </Card>
@@ -173,7 +199,7 @@ export default function AuditDashboard() {
               </div>
               <div>
                 <p className="text-xl font-bold text-slate-900">{auditStats.failedActions}</p>
-                <p className="text-xs text-slate-500">Failed Actions</p>
+                <p className="text-xs text-slate-500">{t("audit:failedActions")}</p>
               </div>
             </CardContent>
           </Card>
@@ -184,7 +210,7 @@ export default function AuditDashboard() {
               </div>
               <div>
                 <p className="text-xl font-bold text-slate-900">{auditStats.bySeverity?.find((s: any) => s.severity === "warning")?.count || 0}</p>
-                <p className="text-xs text-slate-500">Warnings</p>
+                <p className="text-xs text-slate-500">{t("audit:warnings")}</p>
               </div>
             </CardContent>
           </Card>
@@ -196,7 +222,7 @@ export default function AuditDashboard() {
         <div className="relative flex-1">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <Input
-            placeholder="Search actions..."
+            placeholder={t("audit:searchPlaceholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9 h-10 border-slate-200"
@@ -204,7 +230,7 @@ export default function AuditDashboard() {
         </div>
         <Select value={categoryFilter} onValueChange={setCategoryFilter}>
           <SelectTrigger className="w-[200px] h-10 border-slate-200">
-            <SelectValue placeholder="Category" />
+            <SelectValue placeholder={t("audit:allCategories")} />
           </SelectTrigger>
           <SelectContent>
             {categories.map((cat) => (
@@ -214,24 +240,22 @@ export default function AuditDashboard() {
         </Select>
         <Select value={severityFilter} onValueChange={setSeverityFilter}>
           <SelectTrigger className="w-[140px] h-10 border-slate-200">
-            <SelectValue placeholder="Severity" />
+            <SelectValue placeholder={t("audit:allSeverity")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Severity</SelectItem>
-            <SelectItem value="info">Info</SelectItem>
-            <SelectItem value="warning">Warning</SelectItem>
-            <SelectItem value="error">Error</SelectItem>
-            <SelectItem value="critical">Critical</SelectItem>
+            {severityOptions.map((sev) => (
+              <SelectItem key={sev.value} value={sev.value}>{sev.label}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <Select value={successFilter} onValueChange={setSuccessFilter}>
           <SelectTrigger className="w-[140px] h-10 border-slate-200">
-            <SelectValue placeholder="Status" />
+            <SelectValue placeholder={t("audit:allStatus")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="success">Success</SelectItem>
-            <SelectItem value="failed">Failed</SelectItem>
+            {statusOptions.map((st) => (
+              <SelectItem key={st.value} value={st.value}>{st.label}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <div className="flex gap-2">
@@ -252,7 +276,7 @@ export default function AuditDashboard() {
           <CardHeader className="pb-4">
             <CardTitle className="text-base flex items-center gap-2">
               <Clock size={18} className="text-blue-600" />
-              Recent Activity
+              {t("audit:recentActivity")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -270,10 +294,10 @@ export default function AuditDashboard() {
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-medium text-slate-900">{log.action}</p>
                         <Badge variant="outline" className="text-[10px] h-5 px-1.5">
-                          {log.actionCategory?.replace("_", " ")}
+                          {getCategoryLabel(log.actionCategory)}
                         </Badge>
                         {!log.success && (
-                          <Badge variant="destructive" className="text-[10px] h-5 px-1.5">Failed</Badge>
+                          <Badge variant="destructive" className="text-[10px] h-5 px-1.5">{t("audit:failed")}</Badge>
                         )}
                       </div>
                       <p className="text-xs text-slate-500 mt-0.5">
@@ -302,7 +326,7 @@ export default function AuditDashboard() {
         <CardHeader className="pb-4">
           <CardTitle className="text-base flex items-center gap-2">
             <Shield size={18} className="text-blue-600" />
-            Audit Log
+            {t("audit:auditLog")}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -310,24 +334,24 @@ export default function AuditDashboard() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-slate-50/80 border-b border-slate-200">
-                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">Timestamp</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">User</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">Action</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">Category</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">Severity</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">Status</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">{t("audit:timestamp")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">{t("audit:user")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">{t("audit:action")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">{t("audit:category")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">{t("audit:severity")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">{t("audit:status")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-slate-400">Loading audit logs...</td>
+                    <td colSpan={6} className="px-4 py-8 text-center text-slate-400">{t("audit:loading")}</td>
                   </tr>
                 ) : auditLogs?.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="px-4 py-8 text-center text-slate-400">
                       <Shield size={32} className="mx-auto text-slate-300 mb-2" />
-                      No audit logs found
+                      {t("audit:noLogs")}
                     </td>
                   </tr>
                 ) : (
@@ -350,25 +374,25 @@ export default function AuditDashboard() {
                         </td>
                         <td className="px-4 py-3">
                           <Badge variant="outline" className="text-[10px]">
-                            {log.actionCategory?.replace("_", " ")}
+                            {getCategoryLabel(log.actionCategory)}
                           </Badge>
                         </td>
                         <td className="px-4 py-3">
                           <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${severityStyle.bg} ${severityStyle.text}`}>
                             <severityStyle.icon size={10} />
-                            {log.severity}
+                            {getSeverityLabel(log.severity)}
                           </span>
                         </td>
                         <td className="px-4 py-3">
                           {log.success ? (
                             <span className="inline-flex items-center gap-1 text-xs text-emerald-600">
                               <CheckCircle2 size={12} />
-                              Success
+                              {t("audit:success")}
                             </span>
                           ) : (
                             <span className="inline-flex items-center gap-1 text-xs text-red-600">
                               <XCircle size={12} />
-                              Failed
+                              {t("audit:failed")}
                             </span>
                           )}
                         </td>

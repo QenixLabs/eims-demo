@@ -10,12 +10,12 @@ import {
   Clock,
   AlertCircle,
   ShieldCheck,
-  FileText,
-  CheckCircle2,
   FileWarning,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function Verification() {
+  const { t } = useTranslation(["verification", "common"]);
   const [search, setSearch] = useState("");
 
   const { data: pendingApps, isLoading } =
@@ -34,19 +34,19 @@ export default function Verification() {
         <StatCard
           icon={Clock}
           value={pendingCount}
-          label="Pending Review"
+          label={t("pendingReview")}
           color="blue"
         />
         <StatCard
           icon={AlertCircle}
           value={underReviewCount}
-          label="Under Review"
+          label={t("underReview")}
           color="amber"
         />
         <StatCard
           icon={FileWarning}
           value={correctionCount}
-          label="Correction Requested"
+          label={t("correctionRequested")}
           color="purple"
         />
       </div>
@@ -56,7 +56,7 @@ export default function Verification() {
         <div className="relative">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <Input
-            placeholder="Search pending applications..."
+            placeholder={t("searchPlaceholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9 h-10 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
@@ -71,19 +71,19 @@ export default function Verification() {
             <thead>
               <tr className="bg-slate-50/80 border-b border-slate-200">
                 <th className="text-left px-5 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">
-                  Applicant
+                  {t("applicant")}
                 </th>
                 <th className="text-left px-5 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">
-                  Status
+                  {t("status")}
                 </th>
                 <th className="text-left px-5 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">
-                  Authority
+                  {t("authority")}
                 </th>
                 <th className="text-left px-5 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">
-                  Submitted
+                  {t("submitted")}
                 </th>
                 <th className="text-right px-5 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">
-                  Action
+                  {t("action")}
                 </th>
               </tr>
             </thead>
@@ -110,8 +110,8 @@ export default function Verification() {
                 <tr>
                   <td colSpan={5} className="px-5 py-16 text-center">
                     <ShieldCheck size={40} className="mx-auto text-slate-300 mb-3" />
-                    <p className="text-slate-500 font-medium">No pending verifications</p>
-                    <p className="text-sm text-slate-400 mt-1">All applications have been reviewed</p>
+                    <p className="text-slate-500 font-medium">{t("noPending")}</p>
+                    <p className="text-sm text-slate-400 mt-1">{t("allReviewed")}</p>
                   </td>
                 </tr>
               ) : (
@@ -132,17 +132,17 @@ export default function Verification() {
                       <StatusBadge status={app.status} />
                     </td>
                     <td className="px-5 py-4 text-slate-600 text-sm">
-                      {app.authorityName || "N/A"}
+                      {app.authorityName || t("common:nA")}
                     </td>
                     <td className="px-5 py-4 text-slate-500 text-sm">
-                      {app.createdAt ? new Date(app.createdAt).toLocaleDateString() : "N/A"}
+                      {app.createdAt ? new Date(app.createdAt).toLocaleDateString() : t("common:nA")}
                     </td>
                     <td className="px-5 py-4">
                       <div className="flex justify-end">
                         <Link to={`/verification/${app.id}`}>
                           <Button size="sm" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-sm">
                             <Eye size={14} className="mr-1" />
-                            Review
+                            {t("review")}
                           </Button>
                         </Link>
                       </div>
@@ -182,6 +182,7 @@ function StatCard({ icon: Icon, value, label, color }: { icon: React.ElementType
 }
 
 function StatusBadge({ status }: { status: string }) {
+  const { t } = useTranslation("common");
   const styles: Record<string, { bg: string; text: string; dot: string }> = {
     submitted: { bg: "bg-blue-50", text: "text-blue-700", dot: "bg-blue-500" },
     under_review: { bg: "bg-amber-50", text: "text-amber-700", dot: "bg-amber-500" },
@@ -192,7 +193,7 @@ function StatusBadge({ status }: { status: string }) {
   return (
     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${s.bg} ${s.text}`}>
       <span className={`w-1.5 h-1.5 rounded-full ${s.dot}`} />
-      {status.replace("_", " ")}
+      {t(`status.${status}` as any)}
     </span>
   );
 }

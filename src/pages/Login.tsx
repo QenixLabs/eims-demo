@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { ShieldCheck, LogIn, AlertCircle, Eye, EyeOff, Sparkles } from "lucide-react";
 import { trpc } from "@/providers/trpc";
 import { useAuthStore } from "@/store/authStore";
+import { useTranslation } from "react-i18next";
 
 interface FloatingShape {
   id: number;
@@ -19,6 +20,7 @@ interface FloatingShape {
 }
 
 export default function Login() {
+  const { t } = useTranslation("login");
   const navigate = useNavigate();
   const setPlatformUser = useAuthStore((s) => s.setPlatformUser);
   const [email, setEmail] = useState("superadmin@eims.com");
@@ -46,11 +48,11 @@ export default function Login() {
         setPlatformUser(data.user as any);
         navigate("/");
       } else {
-        setError(data.error || "Login failed");
+        setError(data.error || t("loginFailed"));
       }
     },
     onError: (err) => {
-      setError(err.message || "Login failed");
+      setError(err.message || t("loginFailed"));
     },
   });
 
@@ -58,7 +60,7 @@ export default function Login() {
     e.preventDefault();
     setError("");
     if (!email || !password) {
-      setError("Please fill in all fields");
+      setError(t("fillAllFields"));
       return;
     }
     loginMutation.mutate({ email, password });
@@ -75,7 +77,7 @@ export default function Login() {
     <div className="min-h-screen relative overflow-hidden bg-slate-950">
       {/* Animated gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900" />
-      
+
       {/* Animated mesh gradient */}
       <div className="absolute inset-0 opacity-40">
         <div className="absolute top-0 -left-40 w-96 h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" />
@@ -114,9 +116,9 @@ export default function Login() {
             <div className="space-y-6">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm">
                 <Sparkles size={14} className="text-blue-400" />
-                <span className="text-sm text-slate-300">Enterprise Identity Platform</span>
+                <span className="text-sm text-slate-300">{t("enterprisePlatform")}</span>
               </div>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-center gap-4">
                   <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/25">
@@ -124,25 +126,25 @@ export default function Login() {
                   </div>
                 </div>
                 <h1 className="text-4xl font-bold text-white tracking-tight">
-                  Earth Card
+                  {t("title")}
                 </h1>
                 <p className="text-lg text-slate-400 max-w-md">
-                  Identity Management System
+                  {t("subtitle")}
                 </p>
               </div>
 
               <p className="text-sm text-slate-500 max-w-sm mx-auto leading-relaxed">
-                Secure, scalable digital identity enrollment and card issuance platform for government and enterprise organizations.
+                {t("description")}
               </p>
             </div>
 
             {/* Feature highlights */}
             <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
               {[
-                { icon: "🔐", label: "Secure Authentication" },
-                { icon: "📋", label: "Document Verification" },
-                { icon: "🪪", label: "Card Generation" },
-                { icon: "📱", label: "QR Verification" },
+                { icon: "🔐", label: t("secureAuth") },
+                { icon: "📋", label: t("docVerification") },
+                { icon: "🪪", label: t("cardGeneration") },
+                { icon: "📱", label: t("qrVerification") },
               ].map((feature, i) => (
                 <div
                   key={i}
@@ -164,13 +166,13 @@ export default function Login() {
                     <ShieldCheck size={20} className="text-white" />
                   </div>
                   <div>
-                    <h1 className="text-lg font-bold text-white">Earth Card</h1>
-                    <p className="text-xs text-slate-400">Identity Management</p>
+                    <h1 className="text-lg font-bold text-white">{t("title")}</h1>
+                    <p className="text-xs text-slate-400">{t("subtitle")}</p>
                   </div>
                 </div>
-                <CardTitle className="text-xl text-white">Welcome Back</CardTitle>
+                <CardTitle className="text-xl text-white">{t("welcomeBack")}</CardTitle>
                 <p className="text-sm text-slate-400 mt-1">
-                  Sign in to access your dashboard
+                  {t("signInSubtitle")}
                 </p>
               </CardHeader>
               <CardContent className="space-y-5">
@@ -184,21 +186,21 @@ export default function Login() {
 
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-sm font-medium text-slate-300">
-                      Email Address
+                      {t("email")}
                     </Label>
                     <Input
                       id="email"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter your email"
+                      placeholder={t("emailPlaceholder")}
                       className="h-11 bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-blue-500/50 focus:ring-blue-500/20"
                     />
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="password" className="text-sm font-medium text-slate-300">
-                      Password
+                      {t("password")}
                     </Label>
                     <div className="relative">
                       <Input
@@ -206,7 +208,7 @@ export default function Login() {
                         type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Enter your password"
+                        placeholder={t("passwordPlaceholder")}
                         className="h-11 bg-white/5 border-white/10 text-white placeholder:text-slate-500 focus:border-blue-500/50 focus:ring-blue-500/20 pr-10"
                       />
                       <button
@@ -225,7 +227,7 @@ export default function Login() {
                     disabled={loginMutation.isPending}
                   >
                     <LogIn size={16} className="mr-2" />
-                    {loginMutation.isPending ? "Signing in..." : "Sign In"}
+                    {loginMutation.isPending ? t("signingIn") : t("signIn")}
                   </Button>
                 </form>
 
@@ -236,7 +238,7 @@ export default function Login() {
                   </div>
                   <div className="relative flex justify-center text-xs">
                     <span className="bg-transparent px-3 text-slate-500">
-                      or quick login as
+                      {t("orQuickLogin")}
                     </span>
                   </div>
                 </div>
@@ -249,7 +251,7 @@ export default function Login() {
                     className="h-9 text-xs border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white"
                     onClick={() => quickLogin("superadmin@eims.com", "password123")}
                   >
-                    Super Admin
+                    {t("superAdmin")}
                   </Button>
                   <Button
                     variant="outline"
@@ -257,7 +259,7 @@ export default function Login() {
                     className="h-9 text-xs border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white"
                     onClick={() => quickLogin("operator@nia.gov", "password123")}
                   >
-                    Operator
+                    {t("operator")}
                   </Button>
                   <Button
                     variant="outline"
@@ -265,7 +267,7 @@ export default function Login() {
                     className="h-9 text-xs border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:text-white"
                     onClick={() => quickLogin("verifier@nia.gov", "password123")}
                   >
-                    Verifier
+                    {t("verifier")}
                   </Button>
                 </div>
               </CardContent>
@@ -274,7 +276,7 @@ export default function Login() {
             {/* Security badge */}
             <div className="mt-6 flex items-center justify-center gap-2 text-xs text-slate-500">
               <ShieldCheck size={12} />
-              <span>256-bit encryption • Secure connection</span>
+              <span>{t("encryption")}</span>
             </div>
           </div>
         </div>

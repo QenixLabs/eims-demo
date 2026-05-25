@@ -11,6 +11,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { User, Camera, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import type { FormState } from "../NewApplication";
 
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
@@ -22,6 +23,7 @@ interface Props {
 }
 
 export function PersonalInfoStep({ formData, updateField }: Props) {
+  const { t } = useTranslation("personalInfo");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [nationalityMode, setNationalityMode] = useState<"Congolis" | "Others">(
     formData.nationality === "Congolis" ? "Congolis" : formData.nationality ? "Others" : "Congolis"
@@ -39,12 +41,12 @@ export function PersonalInfoStep({ formData, updateField }: Props) {
       const res = await fetch("/api/upload", { method: "POST", body: formData });
       const data = await res.json();
       if (!res.ok) {
-        toast.error(data.error || "Upload failed");
+        toast.error(data.error || t("uploadFailed"));
         return;
       }
       updateField("photoUrl", data.url);
     } catch {
-      toast.error("Upload failed");
+      toast.error(t("uploadFailed"));
     } finally {
       setUploading(false);
     }
@@ -68,7 +70,7 @@ export function PersonalInfoStep({ formData, updateField }: Props) {
               <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
                 <User size={16} className="text-blue-600" />
               </div>
-              <CardTitle className="text-base">Personal Information</CardTitle>
+              <CardTitle className="text-base">{t("title")}</CardTitle>
             </div>
           </CardHeader>
           <CardContent className="space-y-5">
@@ -76,37 +78,37 @@ export function PersonalInfoStep({ formData, updateField }: Props) {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
               <div className="space-y-2">
                 <Label htmlFor="firstName" className="text-sm">
-                  First Name <span className="text-red-500">*</span>
+                  {t("firstName")} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="firstName"
                   value={formData.firstName}
                   onChange={(e) => updateField("firstName", e.target.value)}
-                  placeholder="Enter first name"
+                  placeholder={t("enterFirstName")}
                   className="h-11"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="middleName" className="text-sm">
-                  Middle Name
+                  {t("middleName")}
                 </Label>
                 <Input
                   id="middleName"
                   value={formData.middleName}
                   onChange={(e) => updateField("middleName", e.target.value)}
-                  placeholder="Enter middle name"
+                  placeholder={t("enterMiddleName")}
                   className="h-11"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="lastName" className="text-sm">
-                  Last Name <span className="text-red-500">*</span>
+                  {t("lastName")} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="lastName"
                   value={formData.lastName}
                   onChange={(e) => updateField("lastName", e.target.value)}
-                  placeholder="Enter last name"
+                  placeholder={t("enterLastName")}
                   className="h-11"
                 />
               </div>
@@ -115,7 +117,7 @@ export function PersonalInfoStep({ formData, updateField }: Props) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <Label htmlFor="dateOfBirth" className="text-sm">
-                  Date of Birth <span className="text-red-500">*</span>
+                  {t("dateOfBirth")} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   id="dateOfBirth"
@@ -127,7 +129,7 @@ export function PersonalInfoStep({ formData, updateField }: Props) {
               </div>
               <div className="space-y-2">
                 <Label className="text-sm">
-                  Sex <span className="text-red-500">*</span>
+                  {t("sex")} <span className="text-red-500">*</span>
                 </Label>
                 <Select
                   value={formData.gender}
@@ -137,9 +139,9 @@ export function PersonalInfoStep({ formData, updateField }: Props) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Male">Male</SelectItem>
-                    <SelectItem value="Female">Female</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
+                    <SelectItem value="Male">{t("male")}</SelectItem>
+                    <SelectItem value="Female">{t("female")}</SelectItem>
+                    <SelectItem value="Other">{t("other")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -147,13 +149,13 @@ export function PersonalInfoStep({ formData, updateField }: Props) {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
               <div className="space-y-2">
-                <Label htmlFor="bloodGroup" className="text-sm">Blood Group</Label>
+                <Label htmlFor="bloodGroup" className="text-sm">{t("bloodGroup")}</Label>
                 <Select
                   value={formData.bloodGroup}
                   onValueChange={(v) => updateField("bloodGroup", v)}
                 >
                   <SelectTrigger className="h-11">
-                    <SelectValue placeholder="Select" />
+                    <SelectValue placeholder={t("select")} />
                   </SelectTrigger>
                   <SelectContent>
                     {BLOOD_GROUPS.map((bg) => (
@@ -164,25 +166,25 @@ export function PersonalInfoStep({ formData, updateField }: Props) {
               </div>
               <div className="space-y-2">
                 <Label className="text-sm">
-                  Marital Status
+                  {t("maritalStatus")}
                 </Label>
                 <Select
                   value={formData.maritalStatus}
                   onValueChange={(v) => updateField("maritalStatus", v)}
                 >
                   <SelectTrigger className="h-11">
-                    <SelectValue placeholder="Select" />
+                    <SelectValue placeholder={t("select")} />
                   </SelectTrigger>
                   <SelectContent>
                     {MARITAL_STATUSES.map((ms) => (
-                      <SelectItem key={ms} value={ms}>{ms}</SelectItem>
+                      <SelectItem key={ms} value={ms}>{t(ms.toLowerCase())}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
                 <Label className="text-sm">
-                  Nationality <span className="text-red-500">*</span>
+                  {t("nationality")} <span className="text-red-500">*</span>
                 </Label>
                 <Select
                   value={nationalityMode}
@@ -192,15 +194,15 @@ export function PersonalInfoStep({ formData, updateField }: Props) {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Congolis">Congolis</SelectItem>
-                    <SelectItem value="Others">Others</SelectItem>
+                    <SelectItem value="Congolis">{t("congolis")}</SelectItem>
+                    <SelectItem value="Others">{t("others")}</SelectItem>
                   </SelectContent>
                 </Select>
                 {nationalityMode === "Others" && (
                   <Input
                     value={formData.nationality === "Congolis" ? "" : formData.nationality}
                     onChange={(e) => updateField("nationality", e.target.value)}
-                    placeholder="Enter nationality"
+                    placeholder={t("enterNationality")}
                     className="h-10 mt-2"
                   />
                 )}
@@ -209,34 +211,34 @@ export function PersonalInfoStep({ formData, updateField }: Props) {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="space-y-2">
-                <Label htmlFor="educationLevel" className="text-sm">Education Level</Label>
+                <Label htmlFor="educationLevel" className="text-sm">{t("educationLevel")}</Label>
                 <Input
                   id="educationLevel"
                   value={formData.educationLevel}
                   onChange={(e) => updateField("educationLevel", e.target.value)}
-                  placeholder="Enter education level"
+                  placeholder={t("enterEducation")}
                   className="h-11"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="profession" className="text-sm">Profession</Label>
+                <Label htmlFor="profession" className="text-sm">{t("profession")}</Label>
                 <Input
                   id="profession"
                   value={formData.profession}
                   onChange={(e) => updateField("profession", e.target.value)}
-                  placeholder="Enter profession"
+                  placeholder={t("enterProfession")}
                   className="h-11"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="professionalAddress" className="text-sm">Professional Address</Label>
+              <Label htmlFor="professionalAddress" className="text-sm">{t("professionalAddress")}</Label>
               <Input
                 id="professionalAddress"
                 value={formData.professionalAddress}
                 onChange={(e) => updateField("professionalAddress", e.target.value)}
-                placeholder="Enter professional address"
+                placeholder={t("enterProfessionalAddress")}
                 className="h-11"
               />
             </div>
@@ -251,7 +253,7 @@ export function PersonalInfoStep({ formData, updateField }: Props) {
               <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
                 <Camera size={16} className="text-blue-600" />
               </div>
-              <CardTitle className="text-base">Photo</CardTitle>
+              <CardTitle className="text-base">{t("photo")}</CardTitle>
             </div>
           </CardHeader>
           <CardContent>
@@ -265,7 +267,7 @@ export function PersonalInfoStep({ formData, updateField }: Props) {
             {uploading ? (
               <div className="aspect-[3/4] bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-3">
                 <Loader2 size={32} className="text-blue-500 animate-spin" />
-                <span className="text-sm font-medium text-slate-600">Uploading...</span>
+                <span className="text-sm font-medium text-slate-600">{t("uploading")}</span>
               </div>
             ) : formData.photoUrl ? (
               <div className="relative group">
@@ -279,7 +281,7 @@ export function PersonalInfoStep({ formData, updateField }: Props) {
                   onClick={() => fileInputRef.current?.click()}
                   className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity"
                 >
-                  <span className="text-white text-sm font-medium">Change Photo</span>
+                  <span className="text-white text-sm font-medium">{t("changePhoto")}</span>
                 </button>
               </div>
             ) : (
@@ -292,9 +294,9 @@ export function PersonalInfoStep({ formData, updateField }: Props) {
                 </div>
                 <div className="text-center">
                   <span className="text-sm font-medium text-slate-600 group-hover:text-blue-600 transition-colors">
-                    Click to upload photo
+                    {t("clickToUpload")}
                   </span>
-                  <p className="text-xs text-slate-400 mt-1">JPG, PNG format. Max 5MB.</p>
+                  <p className="text-xs text-slate-400 mt-1">{t("photoFormat")}</p>
                 </div>
               </div>
             )}

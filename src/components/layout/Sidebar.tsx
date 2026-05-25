@@ -18,85 +18,86 @@ import {
 import { useAuthStore } from "@/store/authStore";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface NavItem {
   id: string;
-  label: string;
+  labelKey: string;
   icon: React.ElementType;
   route: string;
-  badge?: string;
+  badgeKey?: string;
   roles: string[];
 }
 
 const navItems: NavItem[] = [
   {
     id: "dashboard",
-    label: "Dashboard",
+    labelKey: "sidebar:dashboard",
     icon: LayoutDashboard,
     route: "/",
     roles: ["super_admin", "authority_admin", "operator", "verification_officer"],
   },
   {
     id: "applications",
-    label: "Applications",
+    labelKey: "sidebar:applications",
     icon: FileText,
     route: "/applications",
     roles: ["super_admin", "authority_admin", "operator", "verification_officer"],
   },
   {
     id: "new_application",
-    label: "New Application",
+    labelKey: "sidebar:newApplication",
     icon: UserPlus,
     route: "/applications/new",
     roles: ["super_admin", "authority_admin", "operator"],
   },
   {
     id: "verification",
-    label: "Verification",
+    labelKey: "sidebar:verification",
     icon: CheckCircle,
     route: "/verification",
-    badge: "Pending",
+    badgeKey: "sidebar:pendingBadge",
     roles: ["super_admin", "authority_admin", "verification_officer"],
   },
 
   {
     id: "card_issuance",
-    label: "Card Issuance",
+    labelKey: "sidebar:cardIssuance",
     icon: IdCard,
     route: "/card-issuance",
     roles: ["super_admin", "authority_admin"],
   },
   {
     id: "authorities",
-    label: "Authorities",
+    labelKey: "sidebar:authorities",
     icon: Building2,
     route: "/authorities",
     roles: ["super_admin"],
   },
   {
     id: "users",
-    label: "Users",
+    labelKey: "sidebar:users",
     icon: Users,
     route: "/users",
     roles: ["super_admin", "authority_admin"],
   },
   {
     id: "audit",
-    label: "Audit Log",
+    labelKey: "sidebar:auditLog",
     icon: Shield,
     route: "/audit",
     roles: ["super_admin", "authority_admin"],
   },
   {
     id: "verify_card",
-    label: "Verify Card",
+    labelKey: "sidebar:verifyCard",
     icon: ShieldCheck,
     route: "/verify",
     roles: ["super_admin", "authority_admin", "operator", "verification_officer"],
   },
   {
     id: "settings",
-    label: "Settings",
+    labelKey: "sidebar:settings",
     icon: Settings,
     route: "/settings",
     roles: ["super_admin", "authority_admin", "operator", "verification_officer"],
@@ -104,6 +105,7 @@ const navItems: NavItem[] = [
 ];
 
 export default function Sidebar() {
+  const { t } = useTranslation();
   const location = useLocation();
   const platformUser = useAuthStore((s) => s.platformUser);
   const logout = useAuthStore((s) => s.logout);
@@ -156,7 +158,7 @@ export default function Sidebar() {
                 Earth Card
               </h1>
               <p className="text-slate-500 text-[10px] leading-tight font-medium">
-                Identity Management
+                {t("sidebar:identityManagement")}
               </p>
             </div>
           </Link>
@@ -189,10 +191,10 @@ export default function Sidebar() {
                     isActive(item.route) ? "text-blue-400" : "group-hover:text-white"
                   )}
                 />
-                <span className="flex-1 font-medium">{item.label}</span>
-                {item.badge && (
+                <span className="flex-1 font-medium">{t(item.labelKey)}</span>
+                {item.badgeKey && (
                   <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-lg shadow-red-500/25">
-                    {item.badge}
+                    {t(item.badgeKey)}
                   </span>
                 )}
                 {isActive(item.route) && (
@@ -228,7 +230,7 @@ export default function Sidebar() {
               className="flex items-center gap-2 w-full px-3 py-2.5 text-sm text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all duration-200"
             >
               <LogOut size={16} />
-              <span className="font-medium">Sign Out</span>
+              <span className="font-medium">{t("common:signOut")}</span>
             </button>
           </div>
         )}

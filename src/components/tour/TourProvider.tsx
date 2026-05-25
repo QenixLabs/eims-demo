@@ -4,6 +4,7 @@ import { driver } from "driver.js";
 import { useAuthStore, type PlatformRole } from "@/store/authStore";
 import { useTourStore, getTourKey } from "@/store/tourStore";
 import { getStepsForPage, type TourStep } from "./tour-steps";
+import { useTranslation } from "react-i18next";
 import "./driver.css";
 
 interface TourContextValue {
@@ -45,6 +46,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
   const platformUser = useAuthStore((s) => s.platformUser);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const { skipTour, isTourCompleted } = useTourStore();
+  const { t } = useTranslation("tour");
 
   const driverRef = useRef<ReturnType<typeof driver> | null>(null);
   const currentPageKeyRef = useRef<string>("");
@@ -61,7 +63,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
 
       const d = driver({
         showProgress: true,
-        progressText: "{{current}} of {{total}}",
+        progressText: "{{current}} / {{total}}",
         animate: true,
         overlayOpacity: 0.45,
         allowClose: true,
@@ -86,14 +88,14 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
             ".driver-popover-next-btn"
           ) as HTMLButtonElement | null;
           if (nextBtn && isLastStep) {
-            nextBtn.textContent = "Finish";
+            nextBtn.textContent = t("finish");
           }
         },
       });
 
       return d;
     },
-    [platformUser]
+    [platformUser, t]
   );
 
   const startTour = useCallback(
@@ -103,7 +105,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
       const pageKey = page || getPageKeyFromPath(location.pathname);
       if (!pageKey) return;
 
-      const steps = getStepsForPage(platformUser.role as PlatformRole, pageKey);
+      const steps = getStepsForPage(platformUser.role as PlatformRole, pageKey, t);
       if (!steps || steps.length === 0) return;
 
       // Destroy any existing tour
@@ -118,7 +120,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
       currentPageKeyRef.current = pageKey;
       d.drive();
     },
-    [platformUser, location.pathname, buildDriver]
+    [platformUser, location.pathname, buildDriver, t]
   );
 
   const skipCurrentTour = useCallback(() => {
@@ -140,11 +142,12 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
       if (!platformUser) return false;
       const steps = getStepsForPage(
         platformUser.role as PlatformRole,
-        page
+        page,
+        t
       );
       return !!steps && steps.length > 0;
     },
-    [platformUser]
+    [platformUser, t]
   );
 
   const isTourRunning = useCallback(() => {
@@ -159,7 +162,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
     if (!pageKey) return;
 
     const role = platformUser.role as PlatformRole;
-    const steps = getStepsForPage(role, pageKey);
+    const steps = getStepsForPage(role, pageKey, t);
     if (!steps || steps.length === 0) return;
 
     const tourKey = getTourKey(platformUser.id, role, pageKey);
@@ -178,7 +181,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
     }, 1200);
 
     return () => clearTimeout(timer);
-  }, [location.pathname, isAuthenticated, platformUser, isTourCompleted, buildDriver]);
+  }, [location.pathname, isAuthenticated, platformUser, isTourCompleted, buildDriver, t]);
 
   // Cleanup on unmount
   useEffect(() => {

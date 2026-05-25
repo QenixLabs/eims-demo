@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   Camera,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { FormState } from "../NewApplication";
 
 interface Props {
@@ -16,6 +17,8 @@ interface Props {
 }
 
 export function ReviewStep({ formData }: Props) {
+  const { t } = useTranslation(["review", "common"]);
+
   return (
     <div className="space-y-5">
       {/* Personal Info */}
@@ -25,22 +28,22 @@ export function ReviewStep({ formData }: Props) {
             <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
               <User size={14} className="text-blue-600" />
             </div>
-            Personal Information
+            {t("personalInfo")}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            <ReviewItem label="First Name" value={formData.firstName} />
-            <ReviewItem label="Middle Name" value={formData.middleName || "N/A"} />
-            <ReviewItem label="Last Name" value={formData.lastName} />
-            <ReviewItem label="Date of Birth" value={formData.dateOfBirth} />
-            <ReviewItem label="Sex" value={formData.gender} />
-            <ReviewItem label="Blood Group" value={formData.bloodGroup || "N/A"} />
-            <ReviewItem label="Nationality" value={formData.nationality} />
-            <ReviewItem label="Marital Status" value={formData.maritalStatus || "N/A"} />
-            <ReviewItem label="Education Level" value={formData.educationLevel || "N/A"} />
-            <ReviewItem label="Profession" value={formData.profession || "N/A"} />
-            <ReviewItem label="Professional Address" value={formData.professionalAddress || "N/A"} className="col-span-2" />
+            <ReviewItem label={t("firstName")} value={formData.firstName} />
+            <ReviewItem label={t("middleName")} value={formData.middleName || t("common:nA")} />
+            <ReviewItem label={t("lastName")} value={formData.lastName} />
+            <ReviewItem label={t("dateOfBirth")} value={formData.dateOfBirth} />
+            <ReviewItem label={t("sex")} value={formData.gender} />
+            <ReviewItem label={t("bloodGroup")} value={formData.bloodGroup || t("common:nA")} />
+            <ReviewItem label={t("nationality")} value={formData.nationality} />
+            <ReviewItem label={t("maritalStatus")} value={formData.maritalStatus || t("common:nA")} />
+            <ReviewItem label={t("educationLevel")} value={formData.educationLevel || t("common:nA")} />
+            <ReviewItem label={t("profession")} value={formData.profession || t("common:nA")} />
+            <ReviewItem label={t("professionalAddress")} value={formData.professionalAddress || t("common:nA")} className="col-span-2" />
           </div>
           {formData.photoUrl && (
             <div className="mt-4 flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
@@ -50,7 +53,7 @@ export function ReviewStep({ formData }: Props) {
                 alt="Photo"
                 className="w-12 h-16 object-cover rounded border"
               />
-              <span className="text-xs text-slate-500">Photo attached</span>
+              <span className="text-xs text-slate-500">{t("photoAttached")}</span>
             </div>
           )}
         </CardContent>
@@ -63,14 +66,14 @@ export function ReviewStep({ formData }: Props) {
             <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
               <Contact size={14} className="text-blue-600" />
             </div>
-            Contact Details
+            {t("contactDetails")}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            <ReviewItem label="Mobile Number" value={formData.mobileNumber} />
-            <ReviewItem label="Email" value={formData.email || "N/A"} />
-            <ReviewItem label="Address" value={formData.address} className="col-span-2 sm:col-span-1" />
+            <ReviewItem label={t("mobileNumber")} value={formData.mobileNumber} />
+            <ReviewItem label={t("email")} value={formData.email || t("common:nA")} />
+            <ReviewItem label={t("address")} value={formData.address} className="col-span-2 sm:col-span-1" />
           </div>
         </CardContent>
       </Card>
@@ -82,15 +85,15 @@ export function ReviewStep({ formData }: Props) {
             <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
               <FileText size={14} className="text-blue-600" />
             </div>
-            Documents
+            {t("documents")}
             <Badge variant="secondary" className="ml-2">
-              {formData.documents.length} file{formData.documents.length !== 1 ? "s" : ""}
+              {formData.documents.length} {formData.documents.length === 1 ? t("files") : t("files_plural")}
             </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
           {formData.documents.length === 0 ? (
-            <p className="text-sm text-slate-400 text-center py-4">No documents uploaded</p>
+            <p className="text-sm text-slate-400 text-center py-4">{t("noDocuments")}</p>
           ) : (
             <div className="space-y-2">
               {formData.documents.map((doc, i) => (
@@ -116,30 +119,30 @@ export function ReviewStep({ formData }: Props) {
             <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
               <Fingerprint size={14} className="text-blue-600" />
             </div>
-            Biometrics
+            {t("biometrics")}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
             {formData.biometrics.isCaptured ? (
               <>
-                <Badge className="bg-blue-100 text-blue-700">Captured</Badge>
+                <Badge className="bg-blue-100 text-blue-700">{t("common:status.captured")}</Badge>
                 {formData.biometrics.isVerified ? (
-                  <Badge className="bg-emerald-100 text-emerald-700">Verified</Badge>
+                  <Badge className="bg-emerald-100 text-emerald-700">{t("common:status.verified")}</Badge>
                 ) : (
-                  <Badge className="bg-amber-100 text-amber-700">Pending Verification</Badge>
+                  <Badge className="bg-amber-100 text-amber-700">{t("pendingVerification")}</Badge>
                 )}
                 {formData.biometrics.dedupResult === "pass" && (
-                  <Badge className="bg-emerald-100 text-emerald-700">Unique</Badge>
+                  <Badge className="bg-emerald-100 text-emerald-700">{t("unique")}</Badge>
                 )}
                 {formData.biometrics.dedupResult === "fail" && (
-                  <Badge className="bg-red-100 text-red-700">Duplicate Detected</Badge>
+                  <Badge className="bg-red-100 text-red-700">{t("duplicateDetected")}</Badge>
                 )}
               </>
             ) : formData.biometrics.fingerprints.length > 0 ? (
-              <Badge className="bg-amber-100 text-amber-700">Locally Captured - Not Saved</Badge>
+              <Badge className="bg-amber-100 text-amber-700">{t("locallyCaptured")}</Badge>
             ) : (
-              <Badge className="bg-slate-100 text-slate-500">Not Captured</Badge>
+              <Badge className="bg-slate-100 text-slate-500">{t("notCaptured")}</Badge>
             )}
           </div>
         </CardContent>
@@ -152,22 +155,22 @@ export function ReviewStep({ formData }: Props) {
             <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
               <CreditCard size={14} className="text-blue-600" />
             </div>
-            Payment
+            {t("payment")}
           </CardTitle>
         </CardHeader>
         <CardContent>
           {formData.payment.paymentId ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              <ReviewItem label="Amount" value={`$${formData.payment.amount}`} />
-              <ReviewItem label="Method" value={formData.payment.paymentMethod.replace("_", " ")} />
-              <ReviewItem label="Receipt No." value={formData.payment.receiptNumber} />
+              <ReviewItem label={t("amountLabel")} value={`$${formData.payment.amount}`} />
+              <ReviewItem label={t("methodLabel")} value={formData.payment.paymentMethod.replace("_", " ")} />
+              <ReviewItem label={t("receiptNo")} value={formData.payment.receiptNumber} />
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <Badge className="bg-slate-100 text-slate-500">Not Recorded</Badge>
+              <Badge className="bg-slate-100 text-slate-500">{t("notRecorded")}</Badge>
               {formData.payment.receiptNumber && (
                 <span className="text-xs text-slate-500">
-                  Receipt #{formData.payment.receiptNumber} entered but not saved
+                  {t("receiptEntered", { receipt: formData.payment.receiptNumber })}
                 </span>
               )}
             </div>
@@ -182,7 +185,7 @@ export function ReviewStep({ formData }: Props) {
             <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
               <ShieldCheck size={14} className="text-blue-600" />
             </div>
-            Identity Card Preview
+            {t("cardPreview")}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -191,15 +194,15 @@ export function ReviewStep({ formData }: Props) {
               <ShieldCheck size={16} className="text-blue-300" />
               <span className="text-xs font-medium text-blue-300 uppercase tracking-wider">Earth Card</span>
             </div>
-            <p className="text-lg font-bold">{`${formData.firstName} ${formData.lastName}` || "Applicant Name"}</p>
+            <p className="text-lg font-bold">{`${formData.firstName} ${formData.lastName}` || t("applicantName")}</p>
             <p className="text-xs text-blue-300 mt-1">
-              DOB: {formData.dateOfBirth || "N/A"} | {formData.gender || "N/A"}
+              DOB: {formData.dateOfBirth || t("common:nA")} | {formData.gender || t("common:nA")}
             </p>
-            <p className="text-[10px] text-blue-300 uppercase tracking-widest mt-3">Identity Number</p>
+            <p className="text-[10px] text-blue-300 uppercase tracking-widest mt-3">{t("identityNumber")}</p>
             <p className="text-sm font-mono font-bold tracking-wider">PENDING-ISSUANCE</p>
             <div className="mt-3 flex items-center justify-between text-xs text-blue-300">
-              <span>Status: Pending</span>
-              <span>Expires: 5 years from issue</span>
+              <span>{t("statusPending")}</span>
+              <span>{t("expires")}</span>
             </div>
           </div>
         </CardContent>

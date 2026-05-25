@@ -27,6 +27,7 @@ import {
   Hash,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export default function Authorities() {
   const [search, setSearch] = useState("");
@@ -43,6 +44,7 @@ export default function Authorities() {
     signatureImageUrl: "",
     signingCertificate: "",
   });
+  const { t } = useTranslation(["authorities", "common"]);
 
   const utils = trpc.useUtils();
   const { data: authorities, isLoading } = trpc.authority.list.useQuery({
@@ -51,39 +53,39 @@ export default function Authorities() {
 
   const createMutation = trpc.authority.create.useMutation({
     onSuccess: (data) => {
-      toast.success(`Authority created! ID: ${data.uniqueAuthorityId}`);
+      toast.success(t("authorities:createSuccess", { id: data.uniqueAuthorityId }));
       setIsDialogOpen(false);
       resetForm();
       utils.authority.list.invalidate();
     },
     onError: (err) => {
-      toast.error(err.message || "Failed to create authority");
+      toast.error(err.message || t("authorities:createError"));
     },
   });
 
   const updateMutation = trpc.authority.update.useMutation({
     onSuccess: () => {
-      toast.success("Authority updated successfully");
+      toast.success(t("authorities:updateSuccess"));
       setIsDialogOpen(false);
       setEditingId(null);
       resetForm();
       utils.authority.list.invalidate();
     },
     onError: (err) => {
-      toast.error(err.message || "Failed to update authority");
+      toast.error(err.message || t("authorities:updateError"));
     },
   });
 
   const toggleMutation = trpc.authority.toggleStatus.useMutation({
     onSuccess: () => {
-      toast.success("Status updated");
+      toast.success(t("authorities:statusUpdated"));
       utils.authority.list.invalidate();
     },
   });
 
   const deleteMutation = trpc.authority.delete.useMutation({
     onSuccess: () => {
-      toast.success("Authority deleted");
+      toast.success(t("authorities:deleteSuccess"));
       utils.authority.list.invalidate();
     },
   });
@@ -134,7 +136,7 @@ export default function Authorities() {
         <div className="relative flex-1 max-w-sm">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <Input
-            placeholder="Search authorities..."
+            placeholder={t("authorities:searchPlaceholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9 h-10 border-slate-200"
@@ -150,47 +152,45 @@ export default function Authorities() {
           <DialogTrigger asChild>
             <Button data-tour="create-auth" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-lg shadow-blue-500/20">
               <Plus size={16} className="mr-1" />
-              Add Authority
+              {t("authorities:addAuthority")}
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>{editingId ? "Edit Authority" : "Create Authority"}</DialogTitle>
+              <DialogTitle>{editingId ? t("authorities:editAuthority") : t("authorities:createAuthority")}</DialogTitle>
               <DialogDescription>
-                {editingId
-                  ? "Update authority details and digital signature configuration"
-                  : "Register a new issuing authority with digital signing capabilities"}
+                {editingId ? t("authorities:editDescription") : t("authorities:createDescription")}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Authority Name <span className="text-red-500">*</span></Label>
+                  <Label>{t("authorities:authorityName")} <span className="text-red-500">*</span></Label>
                   <Input value={formData.authorityName} onChange={(e) => setFormData((p) => ({ ...p, authorityName: e.target.value }))} required className="h-10" />
                 </div>
                 <div className="space-y-2">
-                  <Label>Authority Code <span className="text-red-500">*</span></Label>
+                  <Label>{t("authorities:authorityCode")} <span className="text-red-500">*</span></Label>
                   <Input value={formData.authorityCode} onChange={(e) => setFormData((p) => ({ ...p, authorityCode: e.target.value }))} required className="h-10" placeholder="NIA-001" />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
                   <Hash size={14} />
-                  Registration Number
+                  {t("authorities:registrationNumber")}
                 </Label>
                 <Input value={formData.registrationNumber} onChange={(e) => setFormData((p) => ({ ...p, registrationNumber: e.target.value }))} className="h-10" placeholder="GOV-REG-2024-001234" />
               </div>
               <div className="space-y-2">
-                <Label>Address</Label>
+                <Label>{t("authorities:address")}</Label>
                 <Textarea value={formData.address} onChange={(e) => setFormData((p) => ({ ...p, address: e.target.value }))} rows={2} />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Contact Number</Label>
+                  <Label>{t("authorities:contactNumber")}</Label>
                   <Input value={formData.contactNumber} onChange={(e) => setFormData((p) => ({ ...p, contactNumber: e.target.value }))} className="h-10" />
                 </div>
                 <div className="space-y-2">
-                  <Label>Email</Label>
+                  <Label>{t("authorities:email")}</Label>
                   <Input type="email" value={formData.email} onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))} className="h-10" />
                 </div>
               </div>
@@ -198,31 +198,31 @@ export default function Authorities() {
               <div className="border-t border-slate-200 pt-4">
                 <h4 className="text-sm font-semibold text-slate-900 mb-3 flex items-center gap-2">
                   <Shield size={14} className="text-blue-600" />
-                  Digital Signature Configuration
+                  {t("authorities:digitalSignatureConfig")}
                 </h4>
                 <div className="space-y-3">
                   <div className="space-y-2">
                     <Label className="flex items-center gap-2">
                       <FileSignature size={14} />
-                      Digital Signature (PEM)
+                      {t("authorities:digitalSignature")}
                     </Label>
                     <Textarea
                       value={formData.digitalSignature}
                       onChange={(e) => setFormData((p) => ({ ...p, digitalSignature: e.target.value }))}
                       rows={3}
                       className="font-mono text-xs"
-                      placeholder="-----BEGIN CERTIFICATE-----&#10;MIID...&#10;-----END CERTIFICATE-----"
+                      placeholder="-----BEGIN CERTIFICATE-----\nMIID...\n-----END CERTIFICATE-----"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>Signature Image URL</Label>
+                      <Label>{t("authorities:signatureImageUrl")}</Label>
                       <Input value={formData.signatureImageUrl} onChange={(e) => setFormData((p) => ({ ...p, signatureImageUrl: e.target.value }))} className="h-10" placeholder="/signatures/authority.png" />
                     </div>
                     <div className="space-y-2">
                       <Label className="flex items-center gap-2">
                         <Key size={14} />
-                        Signing Certificate
+                        {t("authorities:signingCertificate")}
                       </Label>
                       <Input value={formData.signingCertificate} onChange={(e) => setFormData((p) => ({ ...p, signingCertificate: e.target.value }))} className="h-10" placeholder="CERT-2026-001" />
                     </div>
@@ -231,7 +231,7 @@ export default function Authorities() {
               </div>
 
               <Button type="submit" className="w-full h-10 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500" disabled={createMutation.isPending || updateMutation.isPending}>
-                {editingId ? "Update" : "Create"} Authority
+                {editingId ? t("authorities:updateAuthority") : t("authorities:create")}
               </Button>
             </form>
           </DialogContent>
@@ -244,12 +244,12 @@ export default function Authorities() {
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-slate-50/80 border-b border-slate-200">
-                <th className="text-left px-5 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">Authority</th>
-                <th className="text-left px-5 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">Unique ID</th>
-                <th className="text-left px-5 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">Registration</th>
-                <th className="text-left px-5 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">Digital Signature</th>
-                <th className="text-left px-5 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">Status</th>
-                <th className="text-right px-5 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">Actions</th>
+                <th className="text-left px-5 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">{t("authorities:authority")}</th>
+                <th className="text-left px-5 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">{t("authorities:uniqueId")}</th>
+                <th className="text-left px-5 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">{t("authorities:registration")}</th>
+                <th className="text-left px-5 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">{t("authorities:digitalSignatureLabel")}</th>
+                <th className="text-left px-5 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">{t("common:status")}</th>
+                <th className="text-right px-5 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">{t("common:actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -257,14 +257,14 @@ export default function Authorities() {
                 <tr>
                   <td colSpan={6} className="px-5 py-8 text-center">
                     <Loader2 size={24} className="mx-auto text-slate-300 animate-spin mb-2" />
-                    <p className="text-slate-400 text-sm">Loading...</p>
+                    <p className="text-slate-400 text-sm">{t("common:loading")}</p>
                   </td>
                 </tr>
               ) : authorities?.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="px-5 py-12 text-center">
                     <Building2 size={32} className="mx-auto text-slate-300 mb-2" />
-                    <p className="text-slate-500 font-medium">No authorities found</p>
+                    <p className="text-slate-500 font-medium">{t("common:noData")}</p>
                   </td>
                 </tr>
               ) : (
@@ -288,16 +288,16 @@ export default function Authorities() {
                       </div>
                     </td>
                     <td className="px-5 py-4">
-                      <span className="text-xs text-slate-600">{auth.registrationNumber || "N/A"}</span>
+                      <span className="text-xs text-slate-600">{auth.registrationNumber || t("common:nA")}</span>
                     </td>
                     <td className="px-5 py-4">
                       {auth.digitalSignature ? (
                         <span className="inline-flex items-center gap-1 text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded">
                           <Shield size={10} />
-                          Configured
+                          {t("authorities:configured")}
                         </span>
                       ) : (
-                        <span className="text-xs text-slate-400">Not configured</span>
+                        <span className="text-xs text-slate-400">{t("authorities:notConfigured")}</span>
                       )}
                     </td>
                     <td className="px-5 py-4">
@@ -305,7 +305,7 @@ export default function Authorities() {
                         auth.isActive ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"
                       }`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${auth.isActive ? "bg-emerald-500" : "bg-red-500"}`} />
-                        {auth.isActive ? "Active" : "Inactive"}
+                        {auth.isActive ? t("common:active") : t("common:inactive")}
                       </span>
                     </td>
                     <td className="px-5 py-4">
@@ -316,7 +316,7 @@ export default function Authorities() {
                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-amber-50 hover:text-amber-600" onClick={() => toggleMutation.mutate({ id: auth.id })}>
                           {auth.isActive ? <PowerOff size={14} /> : <Power size={14} />}
                         </Button>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600" onClick={() => { if (window.confirm("Delete this authority?")) deleteMutation.mutate({ id: auth.id }); }}>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-red-50 hover:text-red-600" onClick={() => { if (window.confirm(t("authorities:confirmDelete"))) deleteMutation.mutate({ id: auth.id }); }}>
                           <Trash2 size={14} />
                         </Button>
                       </div>

@@ -20,6 +20,7 @@ import {
   Droplets,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export default function VerificationDetail() {
   const { id } = useParams<{ id: string }>();
@@ -27,6 +28,7 @@ export default function VerificationDetail() {
   const platformUser = useAuthStore((s) => s.platformUser);
   const [remarks, setRemarks] = useState("");
   const [action, setAction] = useState<"approve" | "reject" | "correction" | null>(null);
+  const { t } = useTranslation(["verificationDetail", "common"]);
 
   const utils = trpc.useUtils();
   const { data: application, isLoading } =
@@ -36,34 +38,34 @@ export default function VerificationDetail() {
 
   const approveMutation = trpc.verification.approve.useMutation({
     onSuccess: () => {
-      toast.success("Application approved successfully!");
+      toast.success(t("verificationDetail:approveSuccess"));
       utils.verification.listPending.invalidate();
       navigate("/verification");
     },
     onError: (err) => {
-      toast.error(err.message || "Failed to approve");
+      toast.error(err.message || t("verificationDetail:approveError"));
     },
   });
 
   const rejectMutation = trpc.verification.reject.useMutation({
     onSuccess: () => {
-      toast.success("Application rejected");
+      toast.success(t("verificationDetail:rejectSuccess"));
       utils.verification.listPending.invalidate();
       navigate("/verification");
     },
     onError: (err) => {
-      toast.error(err.message || "Failed to reject");
+      toast.error(err.message || t("verificationDetail:rejectError"));
     },
   });
 
   const correctionMutation = trpc.verification.requestCorrection.useMutation({
     onSuccess: () => {
-      toast.success("Correction requested");
+      toast.success(t("verificationDetail:correctionSuccess"));
       utils.verification.listPending.invalidate();
       navigate("/verification");
     },
     onError: (err) => {
-      toast.error(err.message || "Failed to request correction");
+      toast.error(err.message || t("verificationDetail:correctionError"));
     },
   });
 
@@ -80,13 +82,13 @@ export default function VerificationDetail() {
       approveMutation.mutate(baseParams);
     } else if (action === "reject") {
       if (!remarks) {
-        toast.error("Please provide remarks for rejection");
+        toast.error(t("verificationDetail:remarksRequired"));
         return;
       }
       rejectMutation.mutate({ ...baseParams, remarks });
     } else if (action === "correction") {
       if (!remarks) {
-        toast.error("Please specify what corrections are needed");
+        toast.error(t("verificationDetail:correctionRequired"));
         return;
       }
       correctionMutation.mutate({ ...baseParams, remarks });
@@ -101,7 +103,7 @@ export default function VerificationDetail() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-slate-400">Loading application details...</p>
+        <p className="text-slate-400">{t("verificationDetail:loading")}</p>
       </div>
     );
   }
@@ -110,11 +112,11 @@ export default function VerificationDetail() {
     return (
       <div className="text-center py-12">
         <AlertCircle size={32} className="mx-auto mb-2 text-slate-300" />
-        <p className="text-slate-500">Application not found</p>
+        <p className="text-slate-500">{t("verificationDetail:notFound")}</p>
         <Link to="/verification">
           <Button variant="outline" className="mt-4">
             <ArrowLeft size={16} className="mr-1" />
-            Back to Verification
+            {t("verificationDetail:backToVerification")}
           </Button>
         </Link>
       </div>
@@ -131,7 +133,7 @@ export default function VerificationDetail() {
           onClick={() => navigate("/verification")}
         >
           <ArrowLeft size={16} className="mr-1" />
-          Back
+          {t("common:back")}
         </Button>
         <div className="flex items-center gap-2">
           <span
@@ -139,7 +141,7 @@ export default function VerificationDetail() {
               application.status
             )}`}
           >
-            {application.status.replace("_", " ")}
+            {t(`common:status.${application.status}` as any)}
           </span>
         </div>
       </div>
@@ -151,7 +153,7 @@ export default function VerificationDetail() {
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
                 <User size={16} className="text-blue-600" />
-                Applicant Information
+                {t("verificationDetail:applicantInfo")}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -164,7 +166,7 @@ export default function VerificationDetail() {
                     {application.firstName} {application.lastName}
                   </h3>
                   <p className="text-sm text-slate-500">
-                    ID: {application.id.toString().padStart(4, "0")}
+                    {t("verificationDetail:id")} {application.id.toString().padStart(4, "0")}
                   </p>
                   {application.identityNumber && (
                     <p className="text-sm text-blue-600 font-medium">
@@ -177,37 +179,37 @@ export default function VerificationDetail() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <InfoItem
                   icon={Calendar}
-                  label="Date of Birth"
+                  label={t("applicationDetail:dateOfBirth")}
                   value={application.dateOfBirth}
                 />
                 <InfoItem
                   icon={User}
-                  label="Sex"
+                  label={t("applicationDetail:sex")}
                   value={application.gender}
                 />
                 <InfoItem
                   icon={Globe}
-                  label="Nationality"
+                  label={t("applicationDetail:nationality")}
                   value={application.nationality}
                 />
                 <InfoItem
                   icon={Droplets}
-                  label="Blood Group"
-                  value={application.bloodGroup || "N/A"}
+                  label={t("applicationDetail:bloodGroup")}
+                  value={application.bloodGroup || t("common:nA")}
                 />
                 <InfoItem
                   icon={Phone}
-                  label="Mobile"
+                  label={t("contactDetails:mobileNumber")}
                   value={application.mobileNumber}
                 />
                 <InfoItem
                   icon={Mail}
-                  label="Email"
-                  value={application.email || "N/A"}
+                  label={t("contactDetails:email")}
+                  value={application.email || t("common:nA")}
                 />
                 <InfoItem
                   icon={MapPin}
-                  label="Address"
+                  label={t("contactDetails:address")}
                   value={application.address}
                   fullWidth
                 />
@@ -220,12 +222,12 @@ export default function VerificationDetail() {
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
                 <FileText size={16} className="text-blue-600" />
-                Uploaded Documents
+                {t("verificationDetail:uploadedDocuments")}
               </CardTitle>
             </CardHeader>
             <CardContent>
               {application.documents?.length === 0 ? (
-                <p className="text-sm text-slate-400">No documents uploaded</p>
+                <p className="text-sm text-slate-400">{t("verificationDetail:noDocuments")}</p>
               ) : (
                 <div className="space-y-2">
                   {application.documents?.map((doc) => (
@@ -261,14 +263,14 @@ export default function VerificationDetail() {
         <div className="space-y-4">
           <Card data-tour="review-actions">
             <CardHeader className="pb-3">
-              <CardTitle className="text-base">Review Actions</CardTitle>
+              <CardTitle className="text-base">{t("verificationDetail:reviewActions")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Authority info */}
               <div className="p-3 bg-slate-50 rounded-md">
-                <p className="text-xs text-slate-500">Authority</p>
+                <p className="text-xs text-slate-500">{t("common:authority")}</p>
                 <p className="text-sm font-medium text-slate-700">
-                  {application.authorityName || "N/A"}
+                  {application.authorityName || t("common:nA")}
                 </p>
               </div>
 
@@ -276,7 +278,7 @@ export default function VerificationDetail() {
               {application.remarks && (
                 <div className="p-3 bg-amber-50 rounded-md">
                   <p className="text-xs text-amber-600 font-medium">
-                    Previous Remarks
+                    {t("verificationDetail:previousRemarks")}
                   </p>
                   <p className="text-sm text-amber-700 mt-1">
                     {application.remarks}
@@ -287,10 +289,10 @@ export default function VerificationDetail() {
               {/* Remarks input */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-slate-700">
-                  Remarks / Notes
+                  {t("verificationDetail:remarks")}
                 </label>
                 <Textarea
-                  placeholder="Add your review remarks..."
+                  placeholder={t("verificationDetail:remarksPlaceholder")}
                   value={remarks}
                   onChange={(e) => setRemarks(e.target.value)}
                   rows={4}
@@ -305,7 +307,7 @@ export default function VerificationDetail() {
                   disabled={isMutating}
                 >
                   <CheckCircle size={16} className="mr-1" />
-                  Approve
+                  {t("verificationDetail:approve")}
                 </Button>
                 <Button
                   variant="outline"
@@ -314,7 +316,7 @@ export default function VerificationDetail() {
                   disabled={isMutating}
                 >
                   <AlertCircle size={16} className="mr-1" />
-                  Request Correction
+                  {t("verificationDetail:requestCorrection")}
                 </Button>
                 <Button
                   variant="outline"
@@ -323,7 +325,7 @@ export default function VerificationDetail() {
                   disabled={isMutating}
                 >
                   <XCircle size={16} className="mr-1" />
-                  Reject
+                  {t("verificationDetail:reject")}
                 </Button>
               </div>
             </CardContent>
@@ -337,23 +339,20 @@ export default function VerificationDetail() {
           <Card className="w-full max-w-md">
             <CardHeader>
               <CardTitle className="text-lg">
-                {action === "approve" && "Approve Application"}
-                {action === "reject" && "Reject Application"}
-                {action === "correction" && "Request Correction"}
+                {action === "approve" && t("verificationDetail:approveTitle")}
+                {action === "reject" && t("verificationDetail:rejectTitle")}
+                {action === "correction" && t("verificationDetail:correctionTitle")}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-slate-600">
-                {action === "approve" &&
-                  "Are you sure you want to approve this application? The applicant will be eligible for identity card issuance."}
-                {action === "reject" &&
-                  "Are you sure you want to reject this application? This action cannot be undone."}
-                {action === "correction" &&
-                  "The applicant will be notified to provide corrected information."}
+                {action === "approve" && t("verificationDetail:approveConfirm")}
+                {action === "reject" && t("verificationDetail:rejectConfirm")}
+                {action === "correction" && t("verificationDetail:correctionConfirm")}
               </p>
               {remarks && (
                 <div className="p-3 bg-slate-50 rounded-md">
-                  <p className="text-xs text-slate-500">Your remarks:</p>
+                  <p className="text-xs text-slate-500">{t("verificationDetail:yourRemarks")}</p>
                   <p className="text-sm text-slate-700 mt-1">{remarks}</p>
                 </div>
               )}
@@ -363,7 +362,7 @@ export default function VerificationDetail() {
                   className="flex-1"
                   onClick={() => setAction(null)}
                 >
-                  Cancel
+                  {t("common:cancel")}
                 </Button>
                 <Button
                   className={`flex-1 ${
@@ -377,12 +376,12 @@ export default function VerificationDetail() {
                   disabled={isMutating}
                 >
                   {isMutating
-                    ? "Processing..."
+                    ? t("verificationDetail:processing")
                     : action === "approve"
-                    ? "Confirm Approve"
+                    ? t("verificationDetail:confirmApprove")
                     : action === "reject"
-                    ? "Confirm Reject"
-                    : "Send Request"}
+                    ? t("verificationDetail:confirmReject")
+                    : t("verificationDetail:sendRequest")}
                 </Button>
               </div>
             </CardContent>

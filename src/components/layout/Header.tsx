@@ -2,20 +2,11 @@ import { Search, Bell, Plus, HelpCircle } from "lucide-react";
 import { useLocation } from "react-router";
 import { useAuthStore } from "@/store/authStore";
 import { useTour } from "@/components/tour/TourProvider";
-
-const routeTitles: Record<string, { title: string; subtitle: string }> = {
-  "/": { title: "Dashboard", subtitle: "Overview of your identity management system" },
-  "/applications": { title: "Applications", subtitle: "Manage and track all identity applications" },
-  "/applications/new": { title: "New Application", subtitle: "Create a new identity application" },
-  "/verification": { title: "Verification", subtitle: "Review and verify pending applications" },
-  "/card-issuance": { title: "Card Issuance", subtitle: "Issue and manage identity cards" },
-  "/authorities": { title: "Authorities", subtitle: "Manage issuing authorities" },
-  "/users": { title: "Users", subtitle: "Manage system users and permissions" },
-  "/verify": { title: "Verify Card", subtitle: "Verify identity card authenticity" },
-  "/settings": { title: "Settings", subtitle: "Manage your account preferences" },
-};
+import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 export default function Header() {
+  const { t } = useTranslation(["header", "common"]);
   const location = useLocation();
   const platformUser = useAuthStore((s) => s.platformUser);
   const isOperator = useAuthStore((s) => s.isOperator());
@@ -24,11 +15,19 @@ export default function Header() {
 
   const getPageInfo = () => {
     const path = location.pathname;
-    if (routeTitles[path]) return routeTitles[path];
-    if (path.startsWith("/applications/")) return { title: "Application Details", subtitle: "View application information" };
-    if (path.startsWith("/verification/")) return { title: "Review Application", subtitle: "Verify applicant details" };
-    if (path.startsWith("/card-issuance/")) return { title: "Issue Card", subtitle: "Generate identity card" };
-    return { title: "Earth Card IMS", subtitle: "Identity Management System" };
+    if (path === "/") return { title: t("dashboardTitle"), subtitle: t("dashboardSubtitle") };
+    if (path === "/applications") return { title: t("applicationsTitle"), subtitle: t("applicationsSubtitle") };
+    if (path === "/applications/new") return { title: t("newApplicationTitle"), subtitle: t("newApplicationSubtitle") };
+    if (path === "/verification") return { title: t("verificationTitle"), subtitle: t("verificationSubtitle") };
+    if (path === "/card-issuance") return { title: t("cardIssuanceTitle"), subtitle: t("cardIssuanceSubtitle") };
+    if (path === "/authorities") return { title: t("authoritiesTitle"), subtitle: t("authoritiesSubtitle") };
+    if (path === "/users") return { title: t("usersTitle"), subtitle: t("usersSubtitle") };
+    if (path === "/verify") return { title: t("verifyCardTitle"), subtitle: t("verifyCardSubtitle") };
+    if (path === "/settings") return { title: t("settingsTitle"), subtitle: t("settingsSubtitle") };
+    if (path.startsWith("/applications/")) return { title: t("applicationDetailsTitle"), subtitle: t("applicationDetailsSubtitle") };
+    if (path.startsWith("/verification/")) return { title: t("reviewApplicationTitle"), subtitle: t("reviewApplicationSubtitle") };
+    if (path.startsWith("/card-issuance/")) return { title: t("issueCardTitle"), subtitle: t("issueCardSubtitle") };
+    return { title: t("defaultTitle"), subtitle: t("defaultSubtitle") };
   };
 
   const pageInfo = getPageInfo();
@@ -55,7 +54,7 @@ export default function Header() {
           />
           <input
             type="text"
-            placeholder="Search applications, cardholders..."
+            placeholder={t("searchPlaceholder")}
             className="w-full pl-9 pr-4 py-2 bg-slate-100 border border-transparent rounded-xl text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all"
           />
         </div>
@@ -63,20 +62,21 @@ export default function Header() {
 
       {/* Right actions */}
       <div className="flex items-center gap-3">
+        <LanguageSwitcher />
         {canCreate && (
           <a
             href="/applications/new"
             className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-medium px-4 py-2 rounded-xl transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30"
           >
             <Plus size={16} />
-            <span>Quick Enroll</span>
+            <span>{t("common:quickEnroll")}</span>
           </a>
         )}
         {hasTourForPage("dashboard") && (
           <button
             onClick={() => startTour()}
             className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
-            title="Start Tour"
+            title={t("common:startTour")}
           >
             <HelpCircle size={18} />
           </button>

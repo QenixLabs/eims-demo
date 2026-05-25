@@ -15,10 +15,12 @@ import {
   Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export default function CardIssuance() {
   const [search, setSearch] = useState("");
   const utils = trpc.useUtils();
+  const { t } = useTranslation(["cardIssuance", "common"]);
 
   const { data: approvedApps, isLoading } = trpc.enrollment.list.useQuery({
     status: "approved",
@@ -30,20 +32,20 @@ export default function CardIssuance() {
   const issueMutation = trpc.card.issue.useMutation({
     onSuccess: (data) => {
       if (data.success) {
-        toast.success(`Identity card issued: ${data.identityNumber}`);
+        toast.success(t("cardIssuance:issueSuccess", { number: data.identityNumber }));
         utils.enrollment.list.invalidate();
         utils.card.list.invalidate();
       } else {
-        toast.error(data.error || "Failed to issue card");
+        toast.error(data.error || t("cardIssuance:issueError"));
       }
     },
     onError: (err) => {
-      toast.error(err.message || "Failed to issue card");
+      toast.error(err.message || t("cardIssuance:issueError"));
     },
   });
 
   const handleIssue = (applicationId: number) => {
-    if (window.confirm("Issue identity card for this application?")) {
+    if (window.confirm(t("cardIssuance:confirmIssue"))) {
       issueMutation.mutate({ applicationId });
     }
   };
@@ -59,7 +61,7 @@ export default function CardIssuance() {
             </div>
             <div>
               <p className="text-2xl font-bold text-slate-900">{approvedApps?.length || 0}</p>
-              <p className="text-xs text-slate-500">Ready to Issue</p>
+              <p className="text-xs text-slate-500">{t("cardIssuance:readyToIssue")}</p>
             </div>
           </CardContent>
         </Card>
@@ -70,7 +72,7 @@ export default function CardIssuance() {
             </div>
             <div>
               <p className="text-2xl font-bold text-slate-900">{issuedCards?.length || 0}</p>
-              <p className="text-xs text-slate-500">Cards Issued</p>
+              <p className="text-xs text-slate-500">{t("cardIssuance:cardsIssued")}</p>
             </div>
           </CardContent>
         </Card>
@@ -81,14 +83,14 @@ export default function CardIssuance() {
         <div className="p-5 border-b border-slate-100">
           <h3 className="font-semibold text-slate-900 flex items-center gap-2">
             <IdCard size={18} className="text-blue-600" />
-            Approved Applications - Ready for Issuance
+            {t("cardIssuance:approvedApplications")}
           </h3>
         </div>
         <div className="p-5">
           <div className="relative mb-4">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <Input
-              placeholder="Search approved applications..."
+              placeholder={t("cardIssuance:searchPlaceholder")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-9 h-10 border-slate-200"
@@ -99,10 +101,10 @@ export default function CardIssuance() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-slate-50/80 border-b border-slate-200">
-                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">Applicant</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">Authority</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">Approved Date</th>
-                  <th className="text-right px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">Action</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">{t("common:applicant")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">{t("common:authority")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">{t("cardIssuance:approvedDate")}</th>
+                  <th className="text-right px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">{t("common:actions")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -110,15 +112,15 @@ export default function CardIssuance() {
                   <tr>
                     <td colSpan={4} className="px-4 py-8 text-center">
                       <Loader2 size={24} className="mx-auto text-slate-300 animate-spin mb-2" />
-                      <p className="text-slate-400 text-sm">Loading...</p>
+                      <p className="text-slate-400 text-sm">{t("common:loading")}</p>
                     </td>
                   </tr>
                 ) : approvedApps?.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="px-4 py-12 text-center">
                       <CreditCard size={32} className="mx-auto text-slate-300 mb-2" />
-                      <p className="text-slate-500 font-medium">No approved applications</p>
-                      <p className="text-sm text-slate-400 mt-1">Approved applications will appear here</p>
+                      <p className="text-slate-500 font-medium">{t("cardIssuance:noApproved")}</p>
+                      <p className="text-sm text-slate-400 mt-1">{t("cardIssuance:approvedAppearHere")}</p>
                     </td>
                   </tr>
                 ) : (
@@ -135,9 +137,9 @@ export default function CardIssuance() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-slate-600 text-sm">{app.authorityName || "N/A"}</td>
+                      <td className="px-4 py-3 text-slate-600 text-sm">{app.authorityName || t("common:nA")}</td>
                       <td className="px-4 py-3 text-slate-500 text-sm">
-                        {app.updatedAt ? new Date(app.updatedAt).toLocaleDateString() : "N/A"}
+                        {app.updatedAt ? new Date(app.updatedAt).toLocaleDateString() : t("common:nA")}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex justify-end">
@@ -152,7 +154,7 @@ export default function CardIssuance() {
                             ) : (
                               <CreditCard size={14} className="mr-1" />
                             )}
-                            Issue Card
+                            {t("cardIssuance:issueCard")}
                           </Button>
                         </div>
                       </td>
@@ -171,18 +173,18 @@ export default function CardIssuance() {
           <div className="p-5 border-b border-slate-100">
             <h3 className="font-semibold text-slate-900 flex items-center gap-2">
               <CheckCircle2 size={18} className="text-emerald-600" />
-              Issued Identity Cards
+              {t("cardIssuance:issuedCards")}
             </h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-slate-50/80 border-b border-slate-200">
-                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">Card Number</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">Name</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">Issue Date</th>
-                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">Status</th>
-                  <th className="text-right px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">Actions</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">{t("cardIssuance:cardNumber")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">{t("cardIssuance:name")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">{t("cardIssuance:issueDate")}</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">{t("common:status")}</th>
+                  <th className="text-right px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">{t("common:actions")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -202,14 +204,14 @@ export default function CardIssuance() {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-slate-500 text-sm">
-                      {card.issuedAt ? new Date(card.issuedAt).toLocaleDateString() : "N/A"}
+                      {card.issuedAt ? new Date(card.issuedAt).toLocaleDateString() : t("common:nA")}
                     </td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
                         card.isActive ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"
                       }`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${card.isActive ? "bg-emerald-500" : "bg-red-500"}`} />
-                        {card.isActive ? "Active" : "Inactive"}
+                        {card.isActive ? t("common:active") : t("common:inactive")}
                       </span>
                     </td>
                     <td className="px-4 py-3">

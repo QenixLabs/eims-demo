@@ -12,17 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, Upload, Trash2, AlertCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { FormState, DocumentEntry } from "../NewApplication";
-
-const DOCUMENT_TYPES = [
-  { value: "driver_license", label: "Driver License" },
-  { value: "voter_id", label: "Voter ID" },
-  { value: "passport", label: "Passport" },
-  { value: "address_proof", label: "Address Proof" },
-  { value: "utility_bill", label: "Utility Bill" },
-  { value: "photo", label: "Photo" },
-  { value: "other", label: "Other" },
-];
 
 interface Props {
   formData: FormState;
@@ -31,9 +22,20 @@ interface Props {
 }
 
 export function DocumentUploadStep({ formData, addDocument, removeDocument }: Props) {
+  const { t } = useTranslation("documentUpload");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [docType, setDocType] = useState("driver_license");
   const [dragOver, setDragOver] = useState(false);
+
+  const documentTypes = [
+    { value: "driver_license", label: t("driverLicense") },
+    { value: "voter_id", label: t("voterId") },
+    { value: "passport", label: t("passport") },
+    { value: "address_proof", label: t("addressProof") },
+    { value: "utility_bill", label: t("utilityBill") },
+    { value: "photo", label: t("photo") },
+    { value: "other", label: t("other") },
+  ];
 
   const handleFileSelect = (files: FileList | null) => {
     if (!files) return;
@@ -80,19 +82,19 @@ export function DocumentUploadStep({ formData, addDocument, removeDocument }: Pr
             <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
               <Upload size={16} className="text-blue-600" />
             </div>
-            <CardTitle className="text-base">Upload Documents</CardTitle>
+            <CardTitle className="text-base">{t("title")}</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-end gap-3">
             <div className="flex-1 space-y-2">
-              <Label className="text-sm">Document Type</Label>
+              <Label className="text-sm">{t("documentType")}</Label>
               <Select value={docType} onValueChange={setDocType}>
                 <SelectTrigger className="h-11">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {DOCUMENT_TYPES.map((dt) => (
+                  {documentTypes.map((dt) => (
                     <SelectItem key={dt.value} value={dt.value}>{dt.label}</SelectItem>
                   ))}
                 </SelectContent>
@@ -121,9 +123,9 @@ export function DocumentUploadStep({ formData, addDocument, removeDocument }: Pr
           >
             <Upload size={32} className="mx-auto text-slate-300 mb-3" />
             <p className="text-sm font-medium text-slate-600">
-              Drag & drop files here, or click to browse
+              {t("dragDrop")}
             </p>
-            <p className="text-xs text-slate-400 mt-1">PDF, JPG, PNG up to 10MB each</p>
+            <p className="text-xs text-slate-400 mt-1">{t("fileFormat")}</p>
           </div>
         </CardContent>
       </Card>
@@ -132,9 +134,9 @@ export function DocumentUploadStep({ formData, addDocument, removeDocument }: Pr
         <Card className="border-slate-200 shadow-sm">
           <CardContent className="p-8 text-center">
             <FileText size={40} className="mx-auto text-slate-300 mb-3" />
-            <p className="text-slate-500 font-medium">No documents uploaded yet</p>
+            <p className="text-slate-500 font-medium">{t("noDocuments")}</p>
             <p className="text-sm text-slate-400 mt-1">
-              Upload at least one document to continue
+              {t("uploadOneDoc")}
             </p>
           </CardContent>
         </Card>
@@ -143,7 +145,7 @@ export function DocumentUploadStep({ formData, addDocument, removeDocument }: Pr
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <FileText size={16} className="text-blue-600" />
-              Uploaded Documents ({formData.documents.length})
+              {t("uploadedDocuments")} ({formData.documents.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -188,7 +190,7 @@ export function DocumentUploadStep({ formData, addDocument, removeDocument }: Pr
         <div className="flex items-start gap-2 p-3 bg-amber-50 rounded-xl border border-amber-200">
           <AlertCircle size={16} className="text-amber-600 mt-0.5 shrink-0" />
           <p className="text-xs text-amber-700">
-            You can skip this step and upload documents later. However, at least one document is recommended before final submission.
+            {t("skipNote")}
           </p>
         </div>
       )}

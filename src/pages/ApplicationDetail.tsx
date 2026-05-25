@@ -19,8 +19,10 @@ import {
   DollarSign,
   CheckCircle2,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function ApplicationDetail() {
+  const { t } = useTranslation(["applicationDetail", "common"]);
   const { id } = useParams<{ id: string }>();
 
   const { data: application, isLoading } = trpc.enrollment.getById.useQuery({
@@ -32,7 +34,7 @@ export default function ApplicationDetail() {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <div className="w-10 h-10 border-3 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-slate-500 text-sm">Loading application...</p>
+          <p className="text-slate-500 text-sm">{t("loading")}</p>
         </div>
       </div>
     );
@@ -42,11 +44,11 @@ export default function ApplicationDetail() {
     return (
       <div className="text-center py-16">
         <FileText size={40} className="mx-auto text-slate-300 mb-3" />
-        <p className="text-slate-500 font-medium">Application not found</p>
+        <p className="text-slate-500 font-medium">{t("notFound")}</p>
         <Link to="/applications">
           <Button variant="outline" className="mt-4">
             <ArrowLeft size={16} className="mr-1" />
-            Back
+            {t("common:back")}
           </Button>
         </Link>
       </div>
@@ -62,7 +64,7 @@ export default function ApplicationDetail() {
         <Button variant="ghost" className="-ml-2 text-slate-500 hover:text-slate-700" asChild>
           <Link to="/applications">
             <ArrowLeft size={16} className="mr-1" />
-            Back to Applications
+            {t("backToApplications")}
           </Link>
         </Button>
         <StatusBadge status={application.status} />
@@ -77,7 +79,7 @@ export default function ApplicationDetail() {
           <div>
             <h2 className="text-xl font-bold text-slate-900">{application.firstName} {application.lastName}</h2>
             <p className="text-sm text-slate-500">
-              Application #{application.id.toString().padStart(4, "0")}
+              {t("application")}{application.id.toString().padStart(4, "0")}
             </p>
             {application.identityNumber && (
               <p className="text-sm font-mono font-semibold text-blue-700 mt-1">
@@ -94,9 +96,9 @@ export default function ApplicationDetail() {
           <Button variant="outline" className="w-full h-12 border-blue-200 hover:bg-blue-50">
             <Pencil size={18} className="mr-2 text-blue-600" />
             <div className="text-left">
-              <p className="text-sm font-medium">Continue / Edit</p>
+              <p className="text-sm font-medium">{t("continueEdit")}</p>
               <p className="text-[10px] text-slate-500">
-                Resume stepper form
+                {t("resumeForm")}
               </p>
             </div>
           </Button>
@@ -105,9 +107,9 @@ export default function ApplicationDetail() {
           <Button variant="outline" disabled className="w-full h-12 border-emerald-200 bg-emerald-50/50">
             <DollarSign size={18} className="mr-2 text-emerald-600" />
             <div className="text-left">
-              <p className="text-sm font-medium">Payment</p>
+              <p className="text-sm font-medium">{t("payment")}</p>
               <p className="text-[10px] text-slate-500">
-                {application.paymentStatus === "completed" ? "Paid" : application.paymentStatus === "pending" ? "Pending" : "N/A"}
+                {application.paymentStatus === "completed" ? t("paid") : application.paymentStatus === "pending" ? t("pending") : t("common:nA")}
               </p>
             </div>
           </Button>
@@ -116,8 +118,8 @@ export default function ApplicationDetail() {
           <Button variant="outline" className="w-full h-12 border-amber-200 hover:bg-amber-50">
             <CheckCircle2 size={18} className="mr-2 text-amber-600" />
             <div className="text-left">
-              <p className="text-sm font-medium">Verify & Approve</p>
-              <p className="text-[10px] text-slate-500">Review application</p>
+              <p className="text-sm font-medium">{t("verifyApprove")}</p>
+              <p className="text-[10px] text-slate-500">{t("reviewApp")}</p>
             </div>
           </Button>
         </Link>
@@ -128,18 +130,18 @@ export default function ApplicationDetail() {
         <CardHeader className="pb-4">
           <CardTitle className="text-base flex items-center gap-2">
             <Clock size={16} className="text-blue-600" />
-            Application Workflow
+            {t("workflow")}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-between">
             {[
-              { label: "Enrolled", done: true },
-              { label: "Documents", done: true },
-              { label: "Biometrics", done: application.biometricStatus === "verified" || application.biometricStatus === "captured" },
-              { label: "Verified", done: ["approved", "issued", "active"].includes(application.status) },
-              { label: "Payment", done: application.paymentStatus === "completed" },
-              { label: "Issued", done: ["issued", "active"].includes(application.status) },
+              { label: t("stepEnrolled"), done: true },
+              { label: t("stepDocuments"), done: true },
+              { label: t("stepBiometrics"), done: application.biometricStatus === "verified" || application.biometricStatus === "captured" },
+              { label: t("stepVerified"), done: ["approved", "issued", "active"].includes(application.status) },
+              { label: t("stepPayment"), done: application.paymentStatus === "completed" },
+              { label: t("stepIssued"), done: ["issued", "active"].includes(application.status) },
             ].map((step, i) => (
               <div key={i} className="flex items-center flex-1">
                 <div className="flex flex-col items-center">
@@ -169,18 +171,18 @@ export default function ApplicationDetail() {
               <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
                 <User size={14} className="text-blue-600" />
               </div>
-              Personal Information
+              {t("personalInfo")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <InfoRow icon={Calendar} label="Date of Birth" value={application.dateOfBirth} />
-            <InfoRow icon={User} label="Sex" value={application.gender} />
-            <InfoRow icon={Globe} label="Nationality" value={application.nationality} />
-            <InfoRow icon={Droplets} label="Blood Group" value={application.bloodGroup || "N/A"} />
-            <InfoRow icon={User} label="Marital Status" value={application.maritalStatus || "N/A"} />
-            <InfoRow icon={User} label="Education Level" value={application.educationLevel || "N/A"} />
-            <InfoRow icon={User} label="Profession" value={application.profession || "N/A"} />
-            <InfoRow icon={MapPin} label="Professional Address" value={application.professionalAddress || "N/A"} />
+            <InfoRow icon={Calendar} label={t("dateOfBirth")} value={application.dateOfBirth} />
+            <InfoRow icon={User} label={t("sex")} value={application.gender} />
+            <InfoRow icon={Globe} label={t("nationality")} value={application.nationality} />
+            <InfoRow icon={Droplets} label={t("bloodGroup")} value={application.bloodGroup || t("common:nA")} />
+            <InfoRow icon={User} label={t("maritalStatus")} value={application.maritalStatus || t("common:nA")} />
+            <InfoRow icon={User} label={t("educationLevel")} value={application.educationLevel || t("common:nA")} />
+            <InfoRow icon={User} label={t("profession")} value={application.profession || t("common:nA")} />
+            <InfoRow icon={MapPin} label={t("professionalAddress")} value={application.professionalAddress || t("common:nA")} />
           </CardContent>
         </Card>
 
@@ -191,13 +193,13 @@ export default function ApplicationDetail() {
               <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
                 <Phone size={14} className="text-blue-600" />
               </div>
-              Contact Details
+              {t("contactDetails")}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <InfoRow icon={Phone} label="Mobile Number" value={application.mobileNumber} />
-            <InfoRow icon={Mail} label="Email" value={application.email || "N/A"} />
-            <InfoRow icon={MapPin} label="Address" value={application.address} />
+            <InfoRow icon={Phone} label={t("mobileNumber")} value={application.mobileNumber} />
+            <InfoRow icon={Mail} label={t("email")} value={application.email || t("common:nA")} />
+            <InfoRow icon={MapPin} label={t("address")} value={application.address} />
           </CardContent>
         </Card>
 
@@ -208,14 +210,14 @@ export default function ApplicationDetail() {
               <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
                 <FileText size={14} className="text-blue-600" />
               </div>
-              Documents
+              {t("documents")}
             </CardTitle>
           </CardHeader>
           <CardContent>
             {application.documents?.length === 0 ? (
               <div className="text-center py-6">
                 <FileText size={28} className="mx-auto text-slate-300 mb-2" />
-                <p className="text-sm text-slate-400">No documents uploaded</p>
+                <p className="text-sm text-slate-400">{t("noDocuments")}</p>
               </div>
             ) : (
               <div className="space-y-2">
@@ -245,7 +247,7 @@ export default function ApplicationDetail() {
                 <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
                   <CreditCard size={14} className="text-blue-600" />
                 </div>
-                Identity Card
+                {t("identityCard")}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -257,23 +259,23 @@ export default function ApplicationDetail() {
                 <div className="relative z-10">
                   <div className="flex items-center gap-2 mb-3">
                     <ShieldCheck size={16} className="text-blue-300" />
-                    <span className="text-xs font-medium text-blue-300 uppercase tracking-wider">Earth Card</span>
+                    <span className="text-xs font-medium text-blue-300 uppercase tracking-wider">{t("earthCard")}</span>
                   </div>
-                  <p className="text-[10px] text-blue-300 uppercase tracking-widest mb-1">Identity Number</p>
+                  <p className="text-[10px] text-blue-300 uppercase tracking-widest mb-1">{t("identityNumber")}</p>
                   <p className="text-lg font-mono font-bold tracking-wider">{card.identityNumber}</p>
                   <div className="mt-4 flex items-center justify-between text-xs text-blue-300">
                     <span className="flex items-center gap-1">
                       <Clock size={10} />
-                      Issued: {card.issuedAt ? new Date(card.issuedAt).toLocaleDateString() : "N/A"}
+                      {t("issued")} {card.issuedAt ? new Date(card.issuedAt).toLocaleDateString() : t("common:nA")}
                     </span>
-                    <span>Expires: {card.expiresAt ? new Date(card.expiresAt).toLocaleDateString() : "N/A"}</span>
+                    <span>{t("expires")} {card.expiresAt ? new Date(card.expiresAt).toLocaleDateString() : t("common:nA")}</span>
                   </div>
                 </div>
               </div>
               <Link to={`/card-issuance/${application.id}`} className="block">
                 <Button variant="outline" className="w-full h-11">
                   <CreditCard size={16} className="mr-2" />
-                  View Full Card
+                  {t("viewFullCard")}
                 </Button>
               </Link>
             </CardContent>
@@ -289,7 +291,7 @@ export default function ApplicationDetail() {
               <div className="w-6 h-6 rounded-md bg-amber-100 flex items-center justify-center">
                 <FileText size={12} className="text-amber-600" />
               </div>
-              Remarks
+              {t("remarks")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -314,6 +316,7 @@ function InfoRow({ icon: Icon, label, value }: { icon: React.ElementType; label:
 }
 
 function StatusBadge({ status }: { status: string }) {
+  const { t } = useTranslation("common");
   const styles: Record<string, { bg: string; text: string; dot: string }> = {
     draft: { bg: "bg-slate-100", text: "text-slate-600", dot: "bg-slate-400" },
     submitted: { bg: "bg-blue-50", text: "text-blue-700", dot: "bg-blue-500" },
@@ -328,7 +331,7 @@ function StatusBadge({ status }: { status: string }) {
   return (
     <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${s.bg} ${s.text}`}>
       <span className={`w-2 h-2 rounded-full ${s.dot}`} />
-      {status.replace("_", " ")}
+      {t(`status.${status}` as any)}
     </span>
   );
 }

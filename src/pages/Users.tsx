@@ -35,13 +35,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
-
-const ROLE_OPTIONS = [
-  { value: "operator", label: "Enrollment Operator" },
-  { value: "verification_officer", label: "Verification Officer" },
-  { value: "authority_admin", label: "Authority Admin" },
-  { value: "super_admin", label: "Super Admin" },
-];
+import { useTranslation } from "react-i18next";
 
 export default function UsersPage() {
   const [search, setSearch] = useState("");
@@ -53,6 +47,7 @@ export default function UsersPage() {
     password: "",
     role: "operator" as string,
   });
+  const { t } = useTranslation(["users", "common"]);
 
   const platformUser = useAuthStore((s) => s.platformUser);
   const isSuperAdmin = useAuthStore((s) => s.isSuperAdmin());
@@ -65,39 +60,39 @@ export default function UsersPage() {
 
   const createMutation = trpc.platformUser.create.useMutation({
     onSuccess: () => {
-      toast.success("User created successfully");
+      toast.success(t("users:createSuccess"));
       setIsDialogOpen(false);
       resetForm();
       utils.platformUser.list.invalidate();
     },
     onError: (err) => {
-      toast.error(err.message || "Failed to create user");
+      toast.error(err.message || t("users:createError"));
     },
   });
 
   const updateMutation = trpc.platformUser.update.useMutation({
     onSuccess: () => {
-      toast.success("User updated successfully");
+      toast.success(t("users:updateSuccess"));
       setIsDialogOpen(false);
       setEditingId(null);
       resetForm();
       utils.platformUser.list.invalidate();
     },
     onError: (err) => {
-      toast.error(err.message || "Failed to update user");
+      toast.error(err.message || t("users:updateError"));
     },
   });
 
   const toggleMutation = trpc.platformUser.toggleStatus.useMutation({
     onSuccess: () => {
-      toast.success("Status updated");
+      toast.success(t("users:statusUpdated"));
       utils.platformUser.list.invalidate();
     },
   });
 
   const deleteMutation = trpc.platformUser.delete.useMutation({
     onSuccess: () => {
-      toast.success("User deleted");
+      toast.success(t("users:deleteSuccess"));
       utils.platformUser.list.invalidate();
     },
   });
@@ -129,7 +124,7 @@ export default function UsersPage() {
       updateMutation.mutate(updateData);
     } else {
       if (!formData.password) {
-        toast.error("Password is required");
+        toast.error(t("users:passwordRequired"));
         return;
       }
       createMutation.mutate({
@@ -142,6 +137,13 @@ export default function UsersPage() {
     }
   };
 
+  const roleOptions = [
+    { value: "operator", label: t("users:enrollmentOperator") },
+    { value: "verification_officer", label: t("users:verificationOfficer") },
+    { value: "authority_admin", label: t("users:authorityAdmin") },
+    { value: "super_admin", label: t("users:superAdmin") },
+  ];
+
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -152,7 +154,7 @@ export default function UsersPage() {
             className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
           />
           <Input
-            placeholder="Search users..."
+            placeholder={t("users:searchPlaceholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"
@@ -171,17 +173,17 @@ export default function UsersPage() {
           <DialogTrigger asChild>
             <Button className="bg-blue-600 hover:bg-blue-700">
               <Plus size={16} className="mr-1" />
-              Add User
+              {t("users:addUser")}
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>{editingId ? "Edit User" : "Create User"}</DialogTitle>
+              <DialogTitle>{editingId ? t("users:editUser") : t("users:createUser")}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label>
-                  Name <span className="text-red-500">*</span>
+                  {t("users:name")} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   value={formData.name}
@@ -193,7 +195,7 @@ export default function UsersPage() {
               </div>
               <div className="space-y-2">
                 <Label>
-                  Email <span className="text-red-500">*</span>
+                  {t("users:email")} <span className="text-red-500">*</span>
                 </Label>
                 <Input
                   type="email"
@@ -207,7 +209,7 @@ export default function UsersPage() {
               {!editingId && (
                 <div className="space-y-2">
                   <Label>
-                    Password <span className="text-red-500">*</span>
+                    {t("users:password")} <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     type="password"
@@ -221,7 +223,7 @@ export default function UsersPage() {
                 </div>
               )}
               <div className="space-y-2">
-                <Label>Role</Label>
+                <Label>{t("users:role")}</Label>
                 <Select
                   value={formData.role}
                   onValueChange={(v) =>
@@ -232,7 +234,7 @@ export default function UsersPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {ROLE_OPTIONS.filter((r) =>
+                    {roleOptions.filter((r) =>
                       isSuperAdmin ? true : r.value !== "super_admin"
                     ).map((role) => (
                       <SelectItem key={role.value} value={role.value}>
@@ -247,7 +249,7 @@ export default function UsersPage() {
                 className="w-full bg-blue-600 hover:bg-blue-700"
                 disabled={createMutation.isPending || updateMutation.isPending}
               >
-                {editingId ? "Update" : "Create"} User
+                {editingId ? t("users:updateUser") : t("users:create")}
               </Button>
             </form>
           </DialogContent>
@@ -259,11 +261,11 @@ export default function UsersPage() {
         <Table>
           <TableHeader>
             <TableRow className="bg-slate-50">
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>{t("users:name")}</TableHead>
+              <TableHead>{t("users:email")}</TableHead>
+              <TableHead>{t("users:role")}</TableHead>
+              <TableHead>{t("common:status")}</TableHead>
+              <TableHead className="text-right">{t("common:actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -273,7 +275,7 @@ export default function UsersPage() {
                   colSpan={5}
                   className="text-center text-slate-400 py-8"
                 >
-                  Loading...
+                  {t("common:loading")}
                 </TableCell>
               </TableRow>
             ) : users?.length === 0 ? (
@@ -282,7 +284,7 @@ export default function UsersPage() {
                   colSpan={5}
                   className="text-center text-slate-400 py-8"
                 >
-                  No users found
+                  {t("users:noUsers")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -318,7 +320,7 @@ export default function UsersPage() {
                           : "bg-red-50 text-red-700"
                       }`}
                     >
-                      {user.isActive ? "Active" : "Inactive"}
+                      {user.isActive ? t("common:active") : t("common:inactive")}
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
@@ -350,7 +352,7 @@ export default function UsersPage() {
                         size="sm"
                         className="h-8 w-8 p-0"
                         onClick={() => {
-                          if (window.confirm("Delete this user?"))
+                          if (window.confirm(t("users:confirmDelete")))
                             deleteMutation.mutate({ id: user.id });
                         }}
                       >

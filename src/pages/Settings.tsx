@@ -12,10 +12,12 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { useTour } from "@/components/tour/TourProvider";
+import { useTranslation } from "react-i18next";
 
 export default function Settings() {
   const platformUser = useAuthStore((s) => s.platformUser);
   const { startTour } = useTour();
+  const { t } = useTranslation("settings");
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -24,7 +26,7 @@ export default function Settings() {
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <User size={16} className="text-blue-600" />
-            Profile Information
+            {t("profileInfo")}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -56,17 +58,17 @@ export default function Settings() {
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <Bell size={16} className="text-blue-600" />
-            Notifications
+            {t("notifications")}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-slate-900">
-                Email Notifications
+                {t("emailNotifications")}
               </p>
               <p className="text-xs text-slate-500">
-                Receive email alerts for application updates
+                {t("emailNotificationsDesc")}
               </p>
             </div>
             <Switch defaultChecked />
@@ -75,10 +77,10 @@ export default function Settings() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-slate-900">
-                New Application Alerts
+                {t("newAppAlerts")}
               </p>
               <p className="text-xs text-slate-500">
-                Get notified when new applications are submitted
+                {t("newAppAlertsDesc")}
               </p>
             </div>
             <Switch defaultChecked />
@@ -87,10 +89,10 @@ export default function Settings() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-slate-900">
-                Verification Reminders
+                {t("verificationReminders")}
               </p>
               <p className="text-xs text-slate-500">
-                Reminders for pending verifications
+                {t("verificationRemindersDesc")}
               </p>
             </div>
             <Switch />
@@ -103,50 +105,50 @@ export default function Settings() {
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <ShieldCheck size={16} className="text-blue-600" />
-            Security
+            {t("security")}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-slate-900">
-                Two-Factor Authentication
+                {t("twoFactor")}
               </p>
               <p className="text-xs text-slate-500">
-                Add an extra layer of security
+                {t("twoFactorDesc")}
               </p>
             </div>
             <Button variant="outline" size="sm">
               <Lock size={14} className="mr-1" />
-              Enable
+              {t("enable")}
             </Button>
           </div>
           <Separator />
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-slate-900">
-                Change Password
+                {t("changePassword")}
               </p>
               <p className="text-xs text-slate-500">
-                Update your account password
+                {t("changePasswordDesc")}
               </p>
             </div>
             <Button variant="outline" size="sm">
-              Update
+              {t("update")}
             </Button>
           </div>
           <Separator />
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-slate-900">
-                Session Management
+                {t("sessionManagement")}
               </p>
               <p className="text-xs text-slate-500">
-                Manage your active sessions
+                {t("sessionManagementDesc")}
               </p>
             </div>
             <Button variant="outline" size="sm">
-              View
+              {t("view")}
             </Button>
           </div>
         </CardContent>
@@ -157,17 +159,17 @@ export default function Settings() {
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <Monitor size={16} className="text-blue-600" />
-            Display
+            {t("display")}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-slate-900">
-                Compact Mode
+                {t("compactMode")}
               </p>
               <p className="text-xs text-slate-500">
-                Reduce spacing for more content
+                {t("compactModeDesc")}
               </p>
             </div>
             <Switch />
@@ -176,10 +178,10 @@ export default function Settings() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-slate-900">
-                Show ID Numbers
+                {t("showIdNumbers")}
               </p>
               <p className="text-xs text-slate-500">
-                Display identity numbers in lists
+                {t("showIdNumbersDesc")}
               </p>
             </div>
             <Switch defaultChecked />
@@ -188,15 +190,15 @@ export default function Settings() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-slate-900">
-                Guided Tour
+                {t("guidedTour")}
               </p>
               <p className="text-xs text-slate-500">
-                Restart the interactive platform tour
+                {t("guidedTourDesc")}
               </p>
             </div>
             <Button variant="outline" size="sm" onClick={() => startTour()}>
               <HelpCircle size={14} className="mr-1" />
-              Restart Tour
+              {t("restartTour")}
             </Button>
           </div>
         </CardContent>

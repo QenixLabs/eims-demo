@@ -19,27 +19,16 @@ import {
   Trash2,
   Filter,
   FileText,
-  ArrowRight,
   Clock,
   CheckCircle2,
   XCircle,
   AlertCircle,
-  Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
-
-const STATUS_OPTIONS = [
-  { value: "all", label: "All Status" },
-  { value: "draft", label: "Draft" },
-  { value: "submitted", label: "Submitted" },
-  { value: "under_review", label: "Under Review" },
-  { value: "correction_requested", label: "Correction Requested" },
-  { value: "approved", label: "Approved" },
-  { value: "rejected", label: "Rejected" },
-  { value: "issued", label: "Issued" },
-];
+import { useTranslation } from "react-i18next";
 
 export default function Applications() {
+  const { t } = useTranslation(["applications", "common"]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const isOperator = useAuthStore((s) => s.isOperator());
@@ -52,18 +41,29 @@ export default function Applications() {
     status: statusFilter !== "all" ? statusFilter : undefined,
   });
 
+  const statusOptions = [
+    { value: "all", label: t("common:status.all") },
+    { value: "draft", label: t("common:status.draft") },
+    { value: "submitted", label: t("common:status.submitted") },
+    { value: "under_review", label: t("common:status.under_review") },
+    { value: "correction_requested", label: t("common:status.correction_requested") },
+    { value: "approved", label: t("common:status.approved") },
+    { value: "rejected", label: t("common:status.rejected") },
+    { value: "issued", label: t("common:status.issued") },
+  ];
+
   const deleteMutation = trpc.enrollment.delete.useMutation({
     onSuccess: () => {
-      toast.success("Application deleted successfully");
+      toast.success(t("deleteSuccess"));
       utils.enrollment.list.invalidate();
     },
     onError: (err) => {
-      toast.error(err.message || "Failed to delete application");
+      toast.error(err.message || t("deleteError"));
     },
   });
 
   const handleDelete = (id: number) => {
-    if (window.confirm("Are you sure you want to delete this application?")) {
+    if (window.confirm(t("confirmDelete"))) {
       deleteMutation.mutate({ id });
     }
   };
@@ -91,7 +91,7 @@ export default function Applications() {
             className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
           />
           <Input
-            placeholder="Search by name, ID, phone..."
+            placeholder={t("searchPlaceholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9 h-10 border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
@@ -104,7 +104,7 @@ export default function Applications() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {STATUS_OPTIONS.map((opt) => (
+              {statusOptions.map((opt) => (
                 <SelectItem key={opt.value} value={opt.value}>
                   {opt.label}
                 </SelectItem>
@@ -116,7 +116,7 @@ export default function Applications() {
           <Link to="/applications/new">
             <Button data-tour="new-app-btn" className="h-10 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-lg shadow-blue-500/20">
               <Plus size={16} className="mr-1" />
-              New Application
+              {t("newApplication")}
             </Button>
           </Link>
         )}
@@ -129,22 +129,22 @@ export default function Applications() {
             <thead>
               <tr className="bg-slate-50/80 border-b border-slate-200">
                 <th className="text-left px-5 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">
-                  ID
+                  {t("id")}
                 </th>
                 <th className="text-left px-5 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">
-                  Applicant
+                  {t("common:applicant")}
                 </th>
                 <th className="text-left px-5 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">
-                  Status
+                  {t("status")}
                 </th>
                 <th className="text-left px-5 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">
-                  Authority
+                  {t("common:authority")}
                 </th>
                 <th className="text-left px-5 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">
-                  Created
+                  {t("common:created")}
                 </th>
                 <th className="text-right px-5 py-3.5 font-semibold text-slate-600 text-xs uppercase tracking-wider">
-                  Actions
+                  {t("common:actions")}
                 </th>
               </tr>
             </thead>
@@ -172,17 +172,17 @@ export default function Applications() {
                 <tr>
                   <td colSpan={6} className="px-5 py-16 text-center">
                     <FileText size={40} className="mx-auto text-slate-300 mb-3" />
-                    <p className="text-slate-500 font-medium">No applications found</p>
+                    <p className="text-slate-500 font-medium">{t("noApplications")}</p>
                     <p className="text-sm text-slate-400 mt-1">
                       {search || statusFilter !== "all"
-                        ? "Try adjusting your search or filters"
-                        : "Create your first application to get started"}
+                        ? t("adjustFilters")
+                        : t("getStarted")}
                     </p>
                     {canCreate && !search && statusFilter === "all" && (
                       <Link to="/applications/new">
                         <Button variant="outline" className="mt-4">
                           <Plus size={14} className="mr-1" />
-                          New Application
+                          {t("newApplication")}
                         </Button>
                       </Link>
                     )}
@@ -218,12 +218,12 @@ export default function Applications() {
                       <StatusBadge status={app.status} icon={getStatusIcon(app.status)} />
                     </td>
                     <td className="px-5 py-4 text-slate-600 text-sm">
-                      {app.authorityName || "N/A"}
+                      {app.authorityName || t("common:nA")}
                     </td>
                     <td className="px-5 py-4 text-slate-500 text-sm">
                       {app.createdAt
                         ? new Date(app.createdAt).toLocaleDateString()
-                        : "N/A"}
+                        : t("common:nA")}
                     </td>
                     <td className="px-5 py-4">
                       <div className="flex items-center justify-end gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
@@ -257,10 +257,10 @@ export default function Applications() {
         </div>
         {!isLoading && applications && applications.length > 0 && (
           <div className="px-5 py-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
-            <span>Showing {applications.length} application{applications.length !== 1 ? "s" : ""}</span>
+            <span>{t("common:showingCount", { count: applications.length })}</span>
             <Link to="/applications/new" className="flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium">
               <Plus size={12} />
-              Add new
+              {t("common:addNew")}
             </Link>
           </div>
         )}
@@ -270,14 +270,15 @@ export default function Applications() {
 }
 
 function StatusBadge({ status, icon }: { status: string; icon: React.ReactNode }) {
-  const statusStyles: Record<string, { bg: string; text: string; dot: string }> = {
-    draft: { bg: "bg-slate-100", text: "text-slate-600", dot: "bg-slate-400" },
-    submitted: { bg: "bg-blue-50", text: "text-blue-700", dot: "bg-blue-500" },
-    under_review: { bg: "bg-amber-50", text: "text-amber-700", dot: "bg-amber-500" },
-    correction_requested: { bg: "bg-purple-50", text: "text-purple-700", dot: "bg-purple-500" },
-    approved: { bg: "bg-emerald-50", text: "text-emerald-700", dot: "bg-emerald-500" },
-    rejected: { bg: "bg-red-50", text: "text-red-700", dot: "bg-red-500" },
-    issued: { bg: "bg-teal-50", text: "text-teal-700", dot: "bg-teal-500" },
+  const { t } = useTranslation("common");
+  const statusStyles: Record<string, { bg: string; text: string }> = {
+    draft: { bg: "bg-slate-100", text: "text-slate-600" },
+    submitted: { bg: "bg-blue-50", text: "text-blue-700" },
+    under_review: { bg: "bg-amber-50", text: "text-amber-700" },
+    correction_requested: { bg: "bg-purple-50", text: "text-purple-700" },
+    approved: { bg: "bg-emerald-50", text: "text-emerald-700" },
+    rejected: { bg: "bg-red-50", text: "text-red-700" },
+    issued: { bg: "bg-teal-50", text: "text-teal-700" },
   };
 
   const styles = statusStyles[status] || statusStyles.draft;
@@ -287,7 +288,7 @@ function StatusBadge({ status, icon }: { status: string; icon: React.ReactNode }
       className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${styles.bg} ${styles.text}`}
     >
       {icon}
-      {status.replace("_", " ")}
+      {t(`status.${status}` as any)}
     </span>
   );
 }
